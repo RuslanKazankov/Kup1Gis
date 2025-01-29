@@ -1,6 +1,6 @@
 namespace Kup1Gis.Models;
 
-public record Coordinates
+public record CoordinatesModel
 {
     public required decimal Latitude { get; init; }
     public required decimal Longitude { get; init; }
