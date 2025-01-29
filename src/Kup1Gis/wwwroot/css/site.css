@@ -22,4 +22,10 @@ body {
   margin-bottom: 60px;
 }
 
---
+.bg-gray-400{
+  background-color: #cfd4da;
+}
+
+.bg-gray-500{
+  background-color: #adb5bd;
+}

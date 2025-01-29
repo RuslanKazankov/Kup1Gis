@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="d-flex flex-grow-1">
+    <div class="container-fluid d-flex">
+        <div class="row flex-grow-1 d-flex align-items-stretch">
+            <div class="col-3">
+                hi
+            </div>
+            <div class="text-center border col-7">
+                <h1 class="display-4">Welcome</h1>
+                <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+            </div>
+            <div class="col-2 bg-gray-500 overflow-auto" style="height: calc(100vh - var(--header-height))">
+                <div class="card mt-2 p-2 text-center">
+                    <h5>Точки наблюдения</h5>
+                    <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target=".multi-collapse" 
+                            aria-expanded="false" aria-controls="collapseInputExcelButton collapseInputExcelSymbol1 collapseInputExcelSymbol2">
+                        <span class="collapse multi-collapse" id="collapseInputExcelSymbol1">▼</span>
+                        Импорт (Excel)
+                        <span class="collapse multi-collapse" id="collapseInputExcelSymbol2">▼</span>
+                    </button>
+                    <div class="collapse multi-collapse" id="collapseInputExcelButton">
+                        <input class="form-control mt-2 btn-outline-success" type="file"
+                               accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2">Создать новую</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
