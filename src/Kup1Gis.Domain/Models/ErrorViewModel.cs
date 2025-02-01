@@ -1,4 +1,4 @@
-namespace Kup1Gis.Models;
+namespace Kup1Gis.Domain.Models;
 
 public class ErrorViewModel
 {

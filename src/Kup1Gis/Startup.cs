@@ -24,10 +24,8 @@ public class Startup
  
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        using (AppDbContext db = CreateDbContext([]))
-        {
-            db.Database.Migrate(); 
-        }
+        using AppDbContext db = CreateDbContext();
+        db.Database.Migrate(); 
 
         if (env.IsDevelopment())
         {
@@ -41,9 +39,7 @@ public class Startup
         }
         
         app.UseStaticFiles();
- 
         app.UseRouting();
- 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute(
@@ -52,7 +48,7 @@ public class Startup
         });
     }
     
-    private static AppDbContext CreateDbContext(string[] args)
+    private static AppDbContext CreateDbContext()
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
  

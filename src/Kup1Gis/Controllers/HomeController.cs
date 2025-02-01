@@ -1,6 +1,6 @@
 using System.Diagnostics;
+using Kup1Gis.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Kup1Gis.Models;
 
 namespace Kup1Gis.Controllers;
 

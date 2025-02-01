@@ -54,12 +54,9 @@ public sealed class AppDbContext : DbContext
             "примечание"
         ]; 
     
-    public AppDbContext(DbContextOptions<AppDbContext> options, bool migrate = false) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        if (!migrate)
-        {
-            Database.EnsureCreated();
-        }
+        Database.EnsureCreated();
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
