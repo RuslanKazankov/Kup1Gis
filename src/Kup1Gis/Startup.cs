@@ -1,4 +1,4 @@
-using Kup1Gis.Infrastructure.Extensions;
+using Kup1Gis.Extensions;
 using Kup1Gis.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,10 +16,9 @@ public class Startup
     
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllersWithViews();
-        
-        string connectionString = _configuration.GetConnectionString(KeyConnectionString)!;
-        services.AddInfrastructureServices(connectionString);
+        services.AddApplicationServices();
+        services.AddDomainServices();
+        services.AddInfrastructureServices(_configuration.GetConnectionString(KeyConnectionString)!);
     }
  
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
