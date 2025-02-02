@@ -35,6 +35,11 @@ public sealed class KupRepository : Repository, IKupRepository
         await Context.SaveChangesAsync(token);
     }
 
+    public Task<IReadOnlyList<Kup>> GetAllAsync(CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Kup> FindByNameAsync(string name, CancellationToken token = default)
     {
         var result = await Context.Kups

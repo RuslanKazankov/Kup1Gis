@@ -8,7 +8,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddModelServices(this IServiceCollection services)
     {
-        services.AddSingleton<IKupService, KupService>();
+        services.AddScoped<IKupService, KupService>();
+        services.AddScoped<IPropertyService, PropertyService>();
         
         return services;
     }

@@ -1,6 +1,7 @@
 using Kup1Gis.Extensions;
 using Kup1Gis.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Kup1Gis;
 
@@ -23,8 +24,11 @@ public class Startup
  
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        using AppDbContext db = CreateDbContext();
-        db.Database.Migrate(); 
+        using (var scope = app.ApplicationServices.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            context.Database.Migrate();
+        }
 
         if (env.IsDevelopment())
         {
@@ -45,19 +49,5 @@ public class Startup
                 name:"default", 
                 pattern: "{controller=Home}/{action=Index}/{id?}");
         });
-    }
-    
-    private static AppDbContext CreateDbContext()
-    {
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
- 
-        ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.SetBasePath(Directory.GetCurrentDirectory());
-        builder.AddJsonFile("appsettings.json");
-        IConfigurationRoot config = builder.Build();
- 
-        string connectionString = config.GetConnectionString(KeyConnectionString)!;
-        optionsBuilder.UseSqlite(connectionString);
-        return new AppDbContext(optionsBuilder.Options);
     }
 }

@@ -34,4 +34,9 @@ public sealed class CoordinatesRepository : Repository, ICoordinatesRepository
         Context.Coordinates.Update(entity);
         await Context.SaveChangesAsync(token);
     }
+
+    public Task<IReadOnlyList<Coordinates>> GetAllAsync(CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
 }

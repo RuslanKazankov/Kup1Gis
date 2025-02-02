@@ -3,6 +3,7 @@ using Kup1Gis.Infrastructure.Persistance;
 using Kup1Gis.Infrastructure.Repositories;
 using Kup1Gis.Infrastructure.Repositories.Implications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kup1Gis.Infrastructure.Extensions;
@@ -15,7 +16,7 @@ public static class ServiceCollectionExtensions
         {
             options
                 .UseLazyLoadingProxies()
-                .UseSqlite(connectionString);
+                .UseSqlite(connectionString, b => b.MigrationsAssembly("Kup1Gis.Infrastructure"));
         });
         
         return services;
@@ -23,11 +24,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddSingleton<IKupRepository, KupRepository>();
-        services.AddSingleton<IObservationRepository, ObservationRepository>();
-        services.AddSingleton<ICoordinatesRepository, CoordinatesRepository>();
-        services.AddSingleton<IKupPropertyRepository, KupPropertyRepository>();
-        services.AddSingleton<IPropertyRepository, PropertyRepository>();
+        services.AddScoped<IKupRepository, KupRepository>();
+        services.AddScoped<IObservationRepository, ObservationRepository>();
+        services.AddScoped<ICoordinatesRepository, CoordinatesRepository>();
+        services.AddScoped<IKupPropertyRepository, KupPropertyRepository>();
+        services.AddScoped<IPropertyRepository, PropertyRepository>();
         
         return services;
     }

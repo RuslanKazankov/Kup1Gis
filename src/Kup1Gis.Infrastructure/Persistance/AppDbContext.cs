@@ -1,5 +1,6 @@
 using Kup1Gis.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Kup1Gis.Infrastructure.Persistance;
 
@@ -53,16 +54,28 @@ public sealed class AppDbContext : DbContext
             "Другие наблюдения",
             "фото",
             "примечание"
-        ]; 
+        ];
+    
+    public AppDbContext() { }
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        Database.EnsureCreated();
+        
+    }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+
+        optionsBuilder.UseSqlite("Data Source=Kup1Gis.db");
+
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<Kup>().HasAlternateKey(k => k.Name);
+        modelBuilder.Entity<Property>().HasAlternateKey(p => p.Name);
 
         modelBuilder
             .Entity<Kup>()
@@ -78,7 +91,5 @@ public sealed class AppDbContext : DbContext
                     Name = property
                 })
         );
-        
-        
     }
 }

@@ -24,4 +24,9 @@ public sealed class ObservationRepository : Repository, IObservationRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<IReadOnlyList<Observation>> GetAllAsync(CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
 }

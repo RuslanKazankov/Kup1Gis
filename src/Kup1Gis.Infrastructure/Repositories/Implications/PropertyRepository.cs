@@ -1,6 +1,7 @@
 using Kup1Gis.Domain.Entity;
 using Kup1Gis.Domain.RepoInterfaces;
 using Kup1Gis.Infrastructure.Persistance;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kup1Gis.Infrastructure.Repositories.Implications;
 
@@ -34,8 +35,23 @@ public sealed class PropertyRepository : Repository, IPropertyRepository
         await Context.SaveChangesAsync(token);
     }
 
-    public Task<Property> FindByNameAsync(string name, CancellationToken token = default)
+    public async Task<IReadOnlyList<Property>> GetAllAsync(CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        return await Context.Properties.AsNoTracking().ToListAsync(token);
+    }
+
+    public async Task<Property> FindByNameAsync(string name, CancellationToken token = default)
+    {
+        var result = await Context.Properties
+            .Where(k => k.Name == name)
+            .FirstOrDefaultAsync(cancellationToken: token);
+        
+        if (result == null)
+        {
+            //Todo: обработать ошибку
+            throw new KeyNotFoundException();
+        }
+
+        return result;
     }
 }

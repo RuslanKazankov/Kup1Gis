@@ -1,4 +1,4 @@
-namespace Kup1Gis.Domain.Models;
+namespace Kup1Gis.ViewModels;
 
 public sealed class ErrorViewModel
 {

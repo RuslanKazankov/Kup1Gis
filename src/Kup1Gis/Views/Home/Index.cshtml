@@ -1,14 +1,17 @@
-﻿@{
+﻿@model Kup1Gis.ViewModels.IndexViewModel
+@{
     ViewData["Title"] = "Главная";
+    string prefixProperty = "property_";
+    string prefixIdProperty = "propertyId_";
 }
 
-<!--Notifications-->
+<!--Types of notifications-->
 <div aria-live="polite" aria-atomic="true" class="">
     <div class="toast-container position-absolute bottom-0 end-0 p-3">
         <div id="SuccessNotify" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div id="SuccessToastText" class="toast-body">
-                    Привет, мир! Это тост-сообщение.
+                    Текст уведомления.
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
             </div>
@@ -17,7 +20,7 @@
         <div id="DangerNotify" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div id="DangerToastText" class="toast-body">
-                    Привет, мир! Это тост-сообщение.
+                    Текст уведомления.
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
             </div>
@@ -25,6 +28,7 @@
     </div>
 </div>
 
+<!--Content-->
 <div class="d-flex flex-grow-1">
     <div class="container-fluid d-flex">
         <div class="row flex-grow-1 d-flex align-items-stretch">
@@ -75,6 +79,14 @@
                                 <label for="kupEksp" class="form-label">Эксп.,°</label>
                             </div>
                         </div>
+                        @foreach (var property in Model.Properties)
+                        {
+                            <div class="mt-3 form-floating">
+                                <textarea name="@($"{prefixProperty}{property.Name}")" id="@($"{prefixIdProperty}{property.Name}")" class="form-control" 
+                                    placeholder="@property.Name"></textarea>
+                                <label for="@($"{prefixIdProperty}{property.Name}")">@property.Name</label>
+                            </div>
+                        }
                     </div>
                     <div class="mt-3">
                         <button id="createPointBtn" class="btn btn-primary" type="button" >Создать</button>
@@ -112,10 +124,19 @@
 
         if (form.checkValidity()) {
             let data = new FormData(form);
-            for (let pair in data.entries()){
-                data.set(pair[0], pair[1].trim());
+            for (let pair in data.entries().map(x => x)){
+                if (pair[0].startsWith(@prefixProperty)){
+                    let property = {
+                        PropertyName: pair[0].slice(@prefixProperty.Length),
+                        PropertyValue: pair[1].trim()
+                    };
+                    data.delete(pair[0]);
+                    data.append(property.PropertyValue, property.PropertyValue);
+                } else {
+                    data.set(pair[0], pair[1].trim());
+                }
             }
-            let response = await sendNewTouch(data);
+            let response = await sendNewKup(data);
             let responseText = await response.text();
             if (response.ok) {
                 sendNotify(responseText);
@@ -130,7 +151,7 @@
         form.classList.add("was-validated");
     });
     
-    async function sendNewTouch(kup){
+    async function sendNewKup(kup){
         return await fetch("/Kup/Add", {
             method: "POST",
             body: kup

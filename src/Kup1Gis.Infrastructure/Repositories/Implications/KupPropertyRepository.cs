@@ -34,4 +34,9 @@ public sealed class KupPropertyRepository : Repository, IKupPropertyRepository
         Context.KupProperties.Update(entity);
         await Context.SaveChangesAsync(token);
     }
+
+    public async Task<IReadOnlyList<KupProperty>> GetAllAsync(CancellationToken token = default)
+    {
+        return await Context.KupProperties.AsNoTracking().ToListAsync(token);
+    }
 }
