@@ -10,5 +10,5 @@ public class Kup
     public string GeographicalReference { get; set; } = string.Empty;
     public long CoordinatesId { get; set; }
     public virtual Coordinates Coordinates { get; set; } = null!;
-    public virtual List<KupProperty> KupProperties { get; set; } = [];
+    public virtual List<Observation> Observations { get; set; } = [];
 }

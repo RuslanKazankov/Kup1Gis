@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddSingleton<IKupRepository, KupRepository>();
+        services.AddSingleton<IObservationRepository, ObservationRepository>();
         services.AddSingleton<ICoordinatesRepository, CoordinatesRepository>();
         services.AddSingleton<IKupPropertyRepository, KupPropertyRepository>();
         services.AddSingleton<IPropertyRepository, PropertyRepository>();

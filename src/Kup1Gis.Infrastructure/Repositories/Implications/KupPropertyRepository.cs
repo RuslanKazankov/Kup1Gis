@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kup1Gis.Infrastructure.Repositories.Implications;
 
-public class KupPropertyRepository : Repository, IKupPropertyRepository
+public sealed class KupPropertyRepository : Repository, IKupPropertyRepository
 {
     public KupPropertyRepository(AppDbContext context) : base(context)
     {
@@ -27,5 +27,11 @@ public class KupPropertyRepository : Repository, IKupPropertyRepository
         }
 
         return result;
+    }
+
+    public async Task UpdateAsync(KupProperty entity, CancellationToken token = default)
+    {
+        Context.KupProperties.Update(entity);
+        await Context.SaveChangesAsync(token);
     }
 }

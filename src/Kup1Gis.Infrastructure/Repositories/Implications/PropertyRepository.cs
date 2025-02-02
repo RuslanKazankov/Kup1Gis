@@ -4,7 +4,7 @@ using Kup1Gis.Infrastructure.Persistance;
 
 namespace Kup1Gis.Infrastructure.Repositories.Implications;
 
-public class PropertyRepository : Repository, IPropertyRepository
+public sealed class PropertyRepository : Repository, IPropertyRepository
 {
     public PropertyRepository(AppDbContext context) : base(context)
     {
@@ -26,5 +26,16 @@ public class PropertyRepository : Repository, IPropertyRepository
         }
 
         return result;
+    }
+
+    public async Task UpdateAsync(Property entity, CancellationToken token = default)
+    {
+        Context.Properties.Update(entity);
+        await Context.SaveChangesAsync(token);
+    }
+
+    public Task<Property> FindByNameAsync(string name, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
     }
 }

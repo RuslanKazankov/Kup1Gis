@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kup1Gis.Infrastructure.Repositories.Implications;
 
-public class KupRepository : Repository, IKupRepository
+public sealed class KupRepository : Repository, IKupRepository
 {
     public KupRepository(AppDbContext context) : base(context)
     {
@@ -27,5 +27,40 @@ public class KupRepository : Repository, IKupRepository
         }
 
         return result;
+    }
+
+    public async Task UpdateAsync(Kup entity, CancellationToken token = default)
+    {
+        Context.Kups.Update(entity);
+        await Context.SaveChangesAsync(token);
+    }
+
+    public async Task<Kup> FindByNameAsync(string name, CancellationToken token = default)
+    {
+        var result = await Context.Kups
+            .Where(k => k.Name == name)
+            .FirstOrDefaultAsync(cancellationToken: token);
+        
+        if (result == null)
+        {
+            //Todo: обработать ошибку
+            throw new KeyNotFoundException();
+        }
+
+        return result;
+    }
+
+    public async Task<bool> ContainsNameAsync(string name, CancellationToken token = default)
+    {
+        return await Context.Kups
+            .Where(k => k.Name == name)
+            .AnyAsync(cancellationToken: token);
+    }
+
+    public async Task<bool> ContainsIdAsync(long id, CancellationToken token = default)
+    {
+        return await Context.Kups
+            .Where(k => k.Id == id)
+            .AnyAsync(cancellationToken: token);
     }
 }

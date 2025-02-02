@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddModelServices(this IServiceCollection services)
     {
         services.AddSingleton<IKupService, KupService>();
+        
         return services;
     }
 }

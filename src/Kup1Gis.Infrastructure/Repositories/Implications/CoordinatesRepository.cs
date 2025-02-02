@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kup1Gis.Infrastructure.Repositories.Implications;
 
-public class CoordinatesRepository : Repository, ICoordinatesRepository
+public sealed class CoordinatesRepository : Repository, ICoordinatesRepository
 {
     public CoordinatesRepository(AppDbContext context) : base(context)
     {
@@ -27,5 +27,11 @@ public class CoordinatesRepository : Repository, ICoordinatesRepository
         }
 
         return result;
+    }
+
+    public async Task UpdateAsync(Coordinates entity, CancellationToken token = default)
+    {
+        Context.Coordinates.Update(entity);
+        await Context.SaveChangesAsync(token);
     }
 }

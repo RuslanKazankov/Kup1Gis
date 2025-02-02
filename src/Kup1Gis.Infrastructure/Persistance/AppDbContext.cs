@@ -6,6 +6,7 @@ namespace Kup1Gis.Infrastructure.Persistance;
 public sealed class AppDbContext : DbContext
 {
     public DbSet<Kup> Kups { get; set; }
+    public DbSet<Observation> Observations { get; set; }
     public DbSet<Coordinates> Coordinates { get; set; }
     public DbSet<Property> Properties { get; set; }
     public DbSet<KupProperty> KupProperties { get; set; }
