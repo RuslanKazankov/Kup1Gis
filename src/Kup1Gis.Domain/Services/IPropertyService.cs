@@ -5,5 +5,5 @@ namespace Kup1Gis.Domain.Services;
 
 public interface IPropertyService
 {
-    Task<IReadOnlyList<PropertyModel>> GetAllProperties();
+    Task<IReadOnlyList<PropertyModel>> GetAllProperties(CancellationToken token = default);
 }

@@ -55,6 +55,21 @@ public sealed class KupRepository : Repository, IKupRepository
         return result;
     }
 
+    public async Task<Kup> FindByIdAsync(long id, CancellationToken token = default)
+    {
+        var result = await Context.Kups
+            .Where(k => k.Id == id)
+            .FirstOrDefaultAsync(cancellationToken: token);
+        
+        if (result == null)
+        {
+            //Todo: обработать ошибку
+            throw new KeyNotFoundException();
+        }
+
+        return result;
+    }
+
     public async Task<bool> ContainsNameAsync(string name, CancellationToken token = default)
     {
         return await Context.Kups

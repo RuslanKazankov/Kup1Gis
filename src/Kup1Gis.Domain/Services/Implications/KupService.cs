@@ -36,9 +36,26 @@ public sealed class KupService : IKupService
                 
                 return await AddObservation(model, token);
             }
+
+            if ((await _kupRepository.ContainsIdAsync(model.Id.Value, token)))
+            {
+                return await AddObservationById(model, token);
+            }
             await AddNewKup(model, token);
             return model.Id.Value;
         }
+    }
+
+    private async Task<long> AddObservationById(KupModel model, CancellationToken token = default)
+    {
+        if (model.Id == null)
+        {
+            throw new ArgumentNullException(nameof(model.Id));
+        }
+        Kup targetKup = await _kupRepository.FindByIdAsync(model.Id.Value, token);
+        targetKup.Observations.Add(await CreateObservation(model.Properties, token));
+        await _kupRepository.UpdateAsync(targetKup, token);
+        return targetKup.Id;
     }
 
     public async Task<IReadOnlyList<KupModel>> GetKups(long id, CancellationToken token = default)

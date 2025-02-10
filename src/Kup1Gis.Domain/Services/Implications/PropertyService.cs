@@ -13,9 +13,9 @@ public class PropertyService : IPropertyService
         _propertyRepository = propertyRepository;
     }
     
-    public async Task<IReadOnlyList<PropertyModel>> GetAllProperties()
+    public async Task<IReadOnlyList<PropertyModel>> GetAllProperties(CancellationToken token = default)
     {
-        return (await _propertyRepository.GetAllAsync())
+        return (await _propertyRepository.GetAllAsync(token))
             .Select(p => new PropertyModel
             {
                 Name = p.Name,

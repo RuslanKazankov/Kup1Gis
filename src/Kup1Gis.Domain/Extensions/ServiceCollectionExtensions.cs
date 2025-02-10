@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddModelServices(this IServiceCollection services)
     {
         services.AddScoped<IKupService, KupService>();
+        services.AddScoped<IExcelService, ExcelService>();
         services.AddScoped<IPropertyService, PropertyService>();
         
         return services;

@@ -79,6 +79,7 @@
                                 <label for="kupEksp" class="form-label">Эксп.,°</label>
                             </div>
                         </div>
+                        <label class="form-label">Наблюдение:</label>
                         @foreach (var property in Model.Properties)
                         {
                             <div class="mt-3 form-floating">
@@ -100,16 +101,19 @@
             <div class="col-2 bg-gray-500 overflow-auto" style="height: calc(100vh - var(--header-height))">
                 <div class="card mt-2 p-2 text-center">
                     <h5>Точки наблюдения</h5>
-                    <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target=".multi-collapse" 
-                            aria-expanded="false" aria-controls="collapseInputExcelButton collapseInputExcelSymbol1 collapseInputExcelSymbol2">
-                        <span class="collapse multi-collapse" id="collapseInputExcelSymbol1">▼</span>
-                        Импорт (Excel)
-                        <span class="collapse multi-collapse" id="collapseInputExcelSymbol2">▼</span>
-                    </button>
-                    <div class="collapse multi-collapse" id="collapseInputExcelButton">
-                        <input class="form-control mt-2 btn-outline-success" type="file"
-                               accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
-                    </div>
+                    <form id="loadExcelForm" enctype="multipart/form-data">
+                        <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target=".multi-collapse"
+                                aria-expanded="false" aria-controls="collapseInputExcelButton collapseInputExcelSymbol1 collapseInputExcelSymbol2">
+                            <span class="collapse multi-collapse" id="collapseInputExcelSymbol1">▼</span>
+                            Импорт (Excel)
+                            <span class="collapse multi-collapse" id="collapseInputExcelSymbol2">▼</span>
+                        </button>
+                        <div class="collapse multi-collapse" id="collapseInputExcelButton">
+                            <input id="excelFile" name="excelFile" class="form-control mt-2 btn-outline-success" type="file" required
+                                   accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+                            <button id="loadExcelButton" type="button" class="btn btn-success mt-2">Загрузить</button>
+                        </div>
+                    </form>
                     <button type="button" class="btn btn-outline-primary mt-2">Создать новую</button>
                 </div>
             </div>
@@ -119,6 +123,21 @@
 
 
 <script>
+    document.getElementById("loadExcelButton").addEventListener("click", async function () {
+        let form = document.getElementById("loadExcelForm");
+        let data = new FormData(form);
+        
+        let result = await sendExcelFile(data);
+        let responseText = await result.text();
+        console.log(result.status + '\n' + result.statusText + '\n' + responseText);
+        
+        if (result.ok){
+            sendNotify("Файл загружен: " + responseText);
+        }else{
+            sendNotify("Ошибка загрузки файла: " + responseText);
+        }
+    })
+    
     document.getElementById("createPointBtn").addEventListener("click", async function () {
         let form = document.getElementById("createPointForm") ;
 
@@ -138,10 +157,10 @@
             }
             let response = await sendNewKup(data);
             let responseText = await response.text();
+            console.log(response.status + '\n' + response.statusText + '\n' + responseText);
             if (response.ok) {
-                sendNotify(responseText);
+                sendNotify("Наблюдение добавлено!");
             } else {
-                console.log(response.status + '\n' + response.statusText + '\n' + responseText);
                 sendNotify(response.status + '\n' + response.statusText, true);
             }
         } else {
@@ -155,6 +174,13 @@
         return await fetch("/Kup/Add", {
             method: "POST",
             body: kup
+        });
+    }
+    
+    async function sendExcelFile(excel){
+        return await fetch("/Kup/ImportExcel/", {
+            method: "POST",
+            body: excel
         });
     }
     
