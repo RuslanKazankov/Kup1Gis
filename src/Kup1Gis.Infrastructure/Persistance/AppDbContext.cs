@@ -81,7 +81,7 @@ public sealed class AppDbContext : DbContext
             .Entity<Kup>()
             .HasOne(k => k.Coordinates)
             .WithOne(c => c.Kup)
-            .HasForeignKey<Coordinates>(c => c.KupId);
+            .HasForeignKey<Kup>(k => k.CoordinatesId);
         
         modelBuilder.Entity<Property>().HasData(
             BasicProperties.Select((property, i) => 

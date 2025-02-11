@@ -7,6 +7,5 @@ public class Coordinates
     public decimal Longitude { get; set; }
     public double? AbsMarkOfSea { get; set; }
     public string Eksp { get; set; } = string.Empty;
-    public long KupId { get; set; }
     public virtual Kup Kup { get; set; } = null!;
 }

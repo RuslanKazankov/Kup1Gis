@@ -50,21 +50,21 @@ public class ExcelService : IExcelService
                 properties.Add(new PropertyModel
                 {
                     Name = baseProperties[i].Name,
-                    Value = currentRow.Cells.Count <= i + 7 ? string.Empty : currentRow.Cells[i + 7].GetString()
+                    Value = currentRow.GetCell(i + 7).GetString() // .Cells .Count <= i + 7 ? string.Empty : currentRow.Cells[i + 7].GetString()
                 });
             }
 
             KupModel kup = new KupModel
             {
-                Id = currentRow.Cells[0].GetLong(),
-                Name = currentRow.Cells[1].GetString(),
-                GeographicalReference = currentRow.Cells[2].GetString(),
+                Id = currentRow.GetCell(0).GetLong(),
+                Name = currentRow.GetCell(1).GetString(),
+                GeographicalReference = currentRow.GetCell(2).GetString(),
                 Coordinates = new CoordinatesModel
                 {
-                    Latitude = currentRow.Cells[3].GetDecimal() ?? throw new ArgumentNullException($"Проверьте координаты точки {currentRow.Cells[0].GetLong()}"),
-                    Longitude = currentRow.Cells[4].GetDecimal() ?? throw new ArgumentNullException($"Проверьте координаты точки {currentRow.Cells[0].GetLong()}"),
-                    AbsMarkOfSea = currentRow.Cells[5].GetDouble(),
-                    Eksp = currentRow.Cells[6].GetString(),
+                    Latitude = currentRow.GetCell(3).GetDecimal() ?? throw new ArgumentNullException($"Проверьте координаты точки {currentRow.Cells[0].GetLong()}"),
+                    Longitude = currentRow.GetCell(4).GetDecimal() ?? throw new ArgumentNullException($"Проверьте координаты точки {currentRow.Cells[0].GetLong()}"),
+                    AbsMarkOfSea = currentRow.GetCell(5).GetDouble(),
+                    Eksp = currentRow.GetCell(6).GetString(),
                 },
                 Properties = properties
             };
