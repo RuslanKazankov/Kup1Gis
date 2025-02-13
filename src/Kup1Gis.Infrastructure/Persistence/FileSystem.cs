@@ -2,11 +2,11 @@ using Kup1Gis.Infrastructure.DirectorySystem;
 
 namespace Kup1Gis.Infrastructure.Persistence;
 
-public class DirectorySystem
+public class FileSystem
 {
     public FilesFolder Files { get; }
 
-    public DirectorySystem()
+    public FileSystem()
     {
         Files = new FilesFolder();
     }

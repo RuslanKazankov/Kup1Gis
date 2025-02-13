@@ -1,9 +1,7 @@
 using Kup1Gis.Domain.RepoInterfaces;
 using Kup1Gis.Infrastructure.Persistence;
-using Kup1Gis.Infrastructure.Repositories;
 using Kup1Gis.Infrastructure.Repositories.Implications;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kup1Gis.Infrastructure.Extensions;
@@ -18,6 +16,7 @@ public static class ServiceCollectionExtensions
                 .UseLazyLoadingProxies()
                 .UseSqlite(connectionString, b => b.MigrationsAssembly("Kup1Gis.Infrastructure"));
         });
+        services.AddSingleton<FileSystem>();
         
         return services;
     }
