@@ -2,7 +2,7 @@ using Kup1Gis.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Kup1Gis.Infrastructure.Persistance;
+namespace Kup1Gis.Infrastructure.Persistence;
 
 public sealed class AppDbContext : DbContext
 {

@@ -1,6 +1,6 @@
 using Kup1Gis.Domain.Entity;
 using Kup1Gis.Domain.RepoInterfaces;
-using Kup1Gis.Infrastructure.Persistance;
+using Kup1Gis.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kup1Gis.Infrastructure.Repositories.Implications;

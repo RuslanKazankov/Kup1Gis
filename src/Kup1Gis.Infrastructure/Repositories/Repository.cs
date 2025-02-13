@@ -1,4 +1,4 @@
-using Kup1Gis.Infrastructure.Persistance;
+using Kup1Gis.Infrastructure.Persistence;
 
 namespace Kup1Gis.Infrastructure.Repositories;
 

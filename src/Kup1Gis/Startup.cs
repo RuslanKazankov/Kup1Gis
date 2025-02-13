@@ -1,5 +1,5 @@
 using Kup1Gis.Extensions;
-using Kup1Gis.Infrastructure.Persistance;
+using Kup1Gis.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
