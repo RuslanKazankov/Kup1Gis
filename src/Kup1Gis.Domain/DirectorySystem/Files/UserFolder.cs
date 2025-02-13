@@ -4,11 +4,11 @@ namespace Kup1Gis.Domain.DirectorySystem.Files;
 
 public class UserFolder : Folder
 {
-    public ImagesFolder Images { get; }
+    public ImageFolder Image { get; }
     public DocumentsFolder Documents { get; }
     internal UserFolder(Folder parent) : base("User", parent)
     {
-        Images = new ImagesFolder(this);
+        Image = new ImageFolder(this);
         Documents = new DocumentsFolder(this);
     }
 }

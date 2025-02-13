@@ -1,3 +1,5 @@
+using Kup1Gis.Domain.DirectorySystem;
+using Kup1Gis.Domain.DirectorySystem.Interfaces;
 using Kup1Gis.Domain.Services;
 using Kup1Gis.Domain.Services.Implications;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPropertyService, PropertyService>();
         services.AddScoped<IImagesService, ImageService>();
         
+        return services;
+    }
+
+    public static IServiceCollection AddDirectorySystem(this IServiceCollection services)
+    {
+        services.AddSingleton<IImageFolderSource, RootSystem>();
         return services;
     }
 }

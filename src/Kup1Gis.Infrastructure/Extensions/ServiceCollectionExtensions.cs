@@ -1,4 +1,3 @@
-using Kup1Gis.Domain.DirectorySystem;
 using Kup1Gis.Domain.RepoInterfaces;
 using Kup1Gis.Infrastructure.Persistence;
 using Kup1Gis.Infrastructure.Repositories.Implications;
@@ -17,7 +16,6 @@ public static class ServiceCollectionExtensions
                 .UseLazyLoadingProxies()
                 .UseSqlite(connectionString, b => b.MigrationsAssembly("Kup1Gis.Infrastructure"));
         });
-        services.AddSingleton<RootSystem>();
         
         return services;
     }
