@@ -1,4 +1,5 @@
 using Kup1Gis.Domain.Entity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity;
 using Kup1Gis.Domain.Extensions;
 using Kup1Gis.Domain.Models;
 using Kup1Gis.Domain.Models.Kup;

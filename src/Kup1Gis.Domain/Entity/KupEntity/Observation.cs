@@ -1,4 +1,6 @@
-namespace Kup1Gis.Domain.Entity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity;
+
+namespace Kup1Gis.Domain.Entity.KupEntity;
 
 public class Observation
 {

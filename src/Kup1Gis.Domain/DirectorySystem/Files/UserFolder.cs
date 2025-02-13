@@ -1,6 +1,6 @@
-using Kup1Gis.Infrastructure.DirectorySystem.Files.User;
+using Kup1Gis.Domain.DirectorySystem.Files.User;
 
-namespace Kup1Gis.Infrastructure.DirectorySystem.Files;
+namespace Kup1Gis.Domain.DirectorySystem.Files;
 
 public class UserFolder : Folder
 {

@@ -1,4 +1,4 @@
-namespace Kup1Gis.Domain.Entity;
+namespace Kup1Gis.Domain.Entity.KupEntity;
 
 public class Coordinates
 {

@@ -1,4 +1,5 @@
 using Kup1Gis.Domain.Entity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity;
 using Kup1Gis.Domain.RepoInterfaces;
 using Kup1Gis.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

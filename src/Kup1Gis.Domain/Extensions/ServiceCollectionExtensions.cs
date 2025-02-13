@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IKupService, KupService>();
         services.AddScoped<IExcelService, ExcelService>();
         services.AddScoped<IPropertyService, PropertyService>();
+        services.AddScoped<IImagesService, ImageService>();
         
         return services;
     }

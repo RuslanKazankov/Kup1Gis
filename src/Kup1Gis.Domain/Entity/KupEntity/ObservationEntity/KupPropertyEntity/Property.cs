@@ -1,4 +1,4 @@
-namespace Kup1Gis.Domain.Entity;
+namespace Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity;
 
 public class Property
 {

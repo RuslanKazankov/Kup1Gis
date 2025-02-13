@@ -1,4 +1,7 @@
 using Kup1Gis.Domain.Entity;
+using Kup1Gis.Domain.Entity.KupEntity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -11,6 +14,7 @@ public sealed class AppDbContext : DbContext
     public DbSet<Coordinates> Coordinates { get; set; }
     public DbSet<Property> Properties { get; set; }
     public DbSet<KupProperty> KupProperties { get; set; }
+    public DbSet<KupImage> KupImages { get; set; }
 
     private static readonly IEnumerable<string> BasicProperties = 
         [

@@ -1,4 +1,6 @@
 using Kup1Gis.Domain.Entity;
+using Kup1Gis.Domain.Entity.KupEntity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity;
 using Kup1Gis.Domain.Models.Kup;
 using Kup1Gis.Domain.RepoInterfaces;
 

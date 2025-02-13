@@ -1,4 +1,4 @@
-namespace Kup1Gis.Infrastructure.DirectorySystem.Files.User;
+namespace Kup1Gis.Domain.DirectorySystem.Files.User;
 
 public class DocumentsFolder : Folder
 {

@@ -1,4 +1,4 @@
-namespace Kup1Gis.Infrastructure.DirectorySystem;
+namespace Kup1Gis.Domain.DirectorySystem;
 
 public abstract class Folder
 {
@@ -13,7 +13,7 @@ public abstract class Folder
     {
         Name = name;
         Parent = parent;
-        string infraPath = Path.GetDirectoryName(typeof(Infrastructure.DirectorySystem.Folder).Assembly.Location)!;
+        string infraPath = Path.GetDirectoryName(typeof(Folder).Assembly.Location)!;
         string dirPath = Path.Combine(infraPath, name);
         DirectoryInfo = new DirectoryInfo(dirPath);
     }

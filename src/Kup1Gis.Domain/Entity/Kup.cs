@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Kup1Gis.Domain.Entity.KupEntity;
 
 namespace Kup1Gis.Domain.Entity;
 
@@ -11,4 +12,5 @@ public class Kup
     public long CoordinatesId { get; set; }
     public virtual Coordinates Coordinates { get; set; } = null!;
     public virtual List<Observation> Observations { get; set; } = [];
+    public virtual List<KupImage> KupImages { get; set; } = [];
 }

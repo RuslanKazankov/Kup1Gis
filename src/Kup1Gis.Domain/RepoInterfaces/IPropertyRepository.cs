@@ -1,4 +1,5 @@
 using Kup1Gis.Domain.Entity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity;
 
 namespace Kup1Gis.Domain.RepoInterfaces;
 
