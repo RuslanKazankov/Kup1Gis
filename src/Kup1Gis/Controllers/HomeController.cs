@@ -10,27 +10,28 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IPropertyService _propertyService;
+    private readonly IKupService _kupService;
 
-    public HomeController(ILogger<HomeController> logger, IPropertyService propertyService)
+    public HomeController(
+        ILogger<HomeController> logger, 
+        IPropertyService propertyService,
+        IKupService kupService)
     {
         _logger = logger;
         _propertyService = propertyService;
+        _kupService = kupService;
     }
 
     public async Task<IActionResult> Index()
     {
         IndexViewModel model = new IndexViewModel()
         {
-            Properties = await _propertyService.GetAllProperties()
+            Properties = await _propertyService.GetAllProperties(),
+            AllKups = await _kupService.GetAllKups()
         };
         
         return View(model);
     }
-
-    // public IActionResult Privacy()
-    // {
-    //     return View();
-    // }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

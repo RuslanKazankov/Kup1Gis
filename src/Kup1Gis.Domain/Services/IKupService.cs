@@ -5,6 +5,7 @@ namespace Kup1Gis.Domain.Services;
 
 public interface IKupService
 {
-    Task<long> AddKup(KupModel model, CancellationToken token = default);
-    Task<IReadOnlyList<KupModel>> GetKups(long id, CancellationToken token = default);
+    Task<long> AddKup(ObservationModel model, CancellationToken token = default);
+    Task<IReadOnlyList<ObservationModel>> GetObservations(long id, CancellationToken token = default);
+    Task<IReadOnlyList<KupHeaderModel>> GetAllKups(CancellationToken token = default);
 }

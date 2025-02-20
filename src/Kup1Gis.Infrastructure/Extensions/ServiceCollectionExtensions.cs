@@ -22,11 +22,13 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IKupRepository, KupRepository>();
-        services.AddScoped<IObservationRepository, ObservationRepository>();
-        services.AddScoped<ICoordinatesRepository, CoordinatesRepository>();
-        services.AddScoped<IKupPropertyRepository, KupPropertyRepository>();
-        services.AddScoped<IPropertyRepository, PropertyRepository>();
+        services
+            .AddScoped<IKupRepository, KupRepository>()
+                .AddScoped<ICoordinatesRepository, CoordinatesRepository>()
+                .AddScoped<IKupImageRepository, KupImageRepository>()
+                .AddScoped<IObservationRepository, ObservationRepository>()
+                    .AddScoped<IKupPropertyRepository, KupPropertyRepository>()
+                        .AddScoped<IPropertyRepository, PropertyRepository>();
         
         return services;
     }

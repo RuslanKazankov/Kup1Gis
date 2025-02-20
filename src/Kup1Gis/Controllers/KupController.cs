@@ -24,12 +24,12 @@ public class KupController : Controller
     }
         
     [HttpPost]
-    public async Task<IActionResult> Add(KupModel model)
+    public async Task<IActionResult> Add(ObservationModel model)
     {
-        _logger.LogInformation("Add request: {KupModel}", JsonSerializer.Serialize<KupModel>(model));
+        _logger.LogInformation("Add request: {KupModel}", JsonSerializer.Serialize<ObservationModel>(model));
         
         long id = await _kupService.AddKup(model);
-        var kups = _kupService.GetKups(id);
+        var kups = _kupService.GetObservations(id);
         string jsonResult = JsonSerializer.Serialize(kups);
         
         _logger.LogInformation("Add response: {result}", JsonSerializer.Serialize(jsonResult));

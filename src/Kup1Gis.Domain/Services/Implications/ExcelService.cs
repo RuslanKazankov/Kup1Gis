@@ -22,7 +22,7 @@ public class ExcelService : IExcelService
         _propertyRepository = propertyRepository;
     }
     
-    public async Task<IReadOnlyList<KupModel>> ReadKupModels(Stream fileStream, ExcelType type, CancellationToken token = default)
+    public async Task<IReadOnlyList<ObservationModel>> ReadKupModels(Stream fileStream, ExcelType type, CancellationToken token = default)
     {
         IWorkbook? workbook = null;
         if (type == ExcelType.Xls)
@@ -41,7 +41,7 @@ public class ExcelService : IExcelService
         int index = 4;
         ISheet sheet = workbook.GetSheetAt(index: 0);
         IRow currentRow = sheet.GetRow(index);
-        List<KupModel> kups = [];
+        List<ObservationModel> kups = [];
         while (!string.IsNullOrEmpty(currentRow.Cells[1].GetString()))
         {
             List<PropertyModel> properties = [];
@@ -55,7 +55,7 @@ public class ExcelService : IExcelService
                 });
             }
 
-            KupModel kup = new KupModel
+            ObservationModel observation = new ObservationModel
             {
                 Id = currentRow.GetCell(0).GetLong(),
                 Name = currentRow.GetCell(1).GetString(),
@@ -70,7 +70,7 @@ public class ExcelService : IExcelService
                 Properties = properties
             };
             
-            kups.Add(kup);
+            kups.Add(observation);
             index++;
             currentRow = sheet.GetRow(index);
         }

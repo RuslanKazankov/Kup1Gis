@@ -17,7 +17,7 @@ public sealed class KupService : IKupService
         _propertyRepository = propertyRepository;
     }
     
-    public async Task<long> AddKup(KupModel model, CancellationToken token = default)
+    public async Task<long> AddKup(ObservationModel model, CancellationToken token = default)
     {
         if (model.Id == null)
         {
@@ -48,7 +48,7 @@ public sealed class KupService : IKupService
         }
     }
 
-    private async Task<long> AddObservationById(KupModel model, CancellationToken token = default)
+    private async Task<long> AddObservationById(ObservationModel model, CancellationToken token = default)
     {
         if (model.Id == null)
         {
@@ -60,15 +60,15 @@ public sealed class KupService : IKupService
         return targetKup.Id;
     }
 
-    public async Task<IReadOnlyList<KupModel>> GetKups(long id, CancellationToken token = default)
+    public async Task<IReadOnlyList<ObservationModel>> GetObservations(long id, CancellationToken token = default)
     {
         Kup kup = await _kupRepository.FindAsync(id, token);
 
-        List<KupModel> result = [];
+        List<ObservationModel> result = [];
 
         foreach (var observation in kup.Observations)
         {
-            KupModel kupModel = new()
+            ObservationModel observationModel = new()
             {
                 Id = kup.Id,
                 Name = kup.Name,
@@ -88,13 +88,36 @@ public sealed class KupService : IKupService
                     }).ToList()
             };
             
-            result.Add(kupModel);
+            result.Add(observationModel);
         }
         
         return result;
     }
 
-    private async Task<long> AddObservation(KupModel model, CancellationToken token = default)
+    public async Task<IReadOnlyList<KupHeaderModel>> GetAllKups(CancellationToken token = default)
+    {
+        var allKups = await _kupRepository.GetAllAsync(token);
+        List<KupHeaderModel> result = [];
+        foreach (var kup in allKups)
+        {
+            result.Add(new KupHeaderModel
+            {
+                Id = kup.Id,
+                Name = kup.Name,
+                GeographicalReference = kup.GeographicalReference,
+                Coordinates = new CoordinatesModel
+                {
+                    Latitude = kup.Coordinates.Latitude,
+                    Longitude = kup.Coordinates.Longitude,
+                    AbsMarkOfSea = kup.Coordinates.AbsMarkOfSea,
+                    Eksp = kup.Coordinates.Eksp
+                }
+            });
+        }
+        return result;
+    }
+
+    private async Task<long> AddObservation(ObservationModel model, CancellationToken token = default)
     {
         Kup targetKup = await _kupRepository.FindByNameAsync(model.Name, token);
         targetKup.Observations.Add(await CreateObservation(model.Properties, token));
@@ -102,7 +125,7 @@ public sealed class KupService : IKupService
         return targetKup.Id;
     }
 
-    private async Task AddNewKup(KupModel model, CancellationToken token = default)
+    private async Task AddNewKup(ObservationModel model, CancellationToken token = default)
     {
         Kup newKup = new Kup
         {

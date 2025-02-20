@@ -1,6 +1,6 @@
 namespace Kup1Gis.Domain.Models.FileModels;
 
-public record ImageModel
+public record GetImageModel
 {
     public required string FileName { get; init; }
     public required string Path { get; init; }

@@ -26,9 +26,9 @@ public class ImageService : IImagesService
         _kupRepository = kupRepository;
     }
 
-    public async Task AddImageToKup(long kupId, AddImageRequest addImageRequest, CancellationToken token = default)
+    public async Task AddImageToKup(long kupId, AddImageModel addImageModel, CancellationToken token = default)
     {
-        string imagePath = GetKupImagePath(kupId, addImageRequest.FileName);
+        string imagePath = GetKupImagePath(kupId, addImageModel.FileName);
         if (File.Exists(imagePath))
         {
             throw new FileLoadException($"File already exists at {imagePath}");
@@ -37,30 +37,30 @@ public class ImageService : IImagesService
         Kup kup = await _kupRepository.FindByIdAsync(kupId, token);
         await _kupImageRepository.AddAsync(new KupImage
         {
-            FileName = addImageRequest.FileName,
-            Description = addImageRequest.Description ?? string.Empty,
+            FileName = addImageModel.FileName,
+            Description = addImageModel.Description ?? string.Empty,
             KupId = kupId,
             Kup = kup
         }, token);
             
         await using FileStream fileStream = new FileStream(imagePath, FileMode.Create);
-        await addImageRequest.FileStream.CopyToAsync(fileStream, token);
+        await addImageModel.FileStream.CopyToAsync(fileStream, token);
     }
 
-    public async Task<IReadOnlyList<ImageModel>> GetImages(long kupId, CancellationToken token = default)
+    public async Task<IReadOnlyList<GetImageModel>> GetImages(long kupId, CancellationToken token = default)
     {
-        List<ImageModel> images = [];
+        List<GetImageModel> images = [];
         Kup kup = await _kupRepository.FindByIdAsync(kupId, token);
         foreach (KupImage kupImage in kup.KupImages)
         {
-            ImageModel imageModel = new ImageModel
+            GetImageModel getImageModel = new GetImageModel
             {
                 FileName = kupImage.FileName,
                 Path = GetKupImagePath(kupImage.KupId, kupImage.FileName),
                 Description = kupImage.Description
             };
             
-            images.Add(imageModel);
+            images.Add(getImageModel);
         }
 
         return images.AsReadOnly();

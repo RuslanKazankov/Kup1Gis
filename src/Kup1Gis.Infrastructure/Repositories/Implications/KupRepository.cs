@@ -35,9 +35,11 @@ public sealed class KupRepository : Repository, IKupRepository
         await Context.SaveChangesAsync(token);
     }
 
-    public Task<IReadOnlyList<Kup>> GetAllAsync(CancellationToken token = default)
+    public async Task<IReadOnlyList<Kup>> GetAllAsync(CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        return await Context.Kups
+            .Select(k => k)
+            .ToListAsync(token);
     }
 
     public async Task<Kup> FindByNameAsync(string name, CancellationToken token = default)
@@ -82,5 +84,12 @@ public sealed class KupRepository : Repository, IKupRepository
         return await Context.Kups
             .Where(k => k.Id == id)
             .AnyAsync(cancellationToken: token);
+    }
+
+    public async Task<long[]> GetAllIdsAsync(CancellationToken token = default)
+    {
+        return await Context.Kups
+            .Select(k => k.Id)
+            .ToArrayAsync(token); 
     }
 }

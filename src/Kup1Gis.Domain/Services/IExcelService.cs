@@ -5,5 +5,5 @@ namespace Kup1Gis.Domain.Services;
 
 public interface IExcelService
 {
-    Task<IReadOnlyList<KupModel>> ReadKupModels(Stream fileStream, ExcelType type, CancellationToken token = default);
+    Task<IReadOnlyList<ObservationModel>> ReadKupModels(Stream fileStream, ExcelType type, CancellationToken token = default);
 }

@@ -1,29 +1,32 @@
 using Kup1Gis.Domain.Models.FileModels;
 using Kup1Gis.Domain.Services;
+using Kup1Gis.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kup1Gis.Controllers;
 
 public class ImageController : Controller
 {
-    private IImagesService _imagesService;
+    private readonly IImagesService _imagesService;
 
     public ImageController(IImagesService imagesService)
     {
         _imagesService = imagesService;
     }
     
-    public IActionResult AddImage(IFormFileCollection files)
+    [HttpPost]
+    public IActionResult AddImage(AddImageListRequest request)
     {
-        foreach (var file in files)
+        foreach (var file in request.Images)
         {
-            _imagesService.AddImageToKup(0, new AddImageRequest()
+            _imagesService.AddImageToKup(request.KupId, new AddImageModel()
             {
-                FileName = file.FileName,
-                FileStream = file.OpenReadStream()
+                FileName = string.IsNullOrEmpty(file.Title?.Trim()) ? file.Image.FileName : file.Title.Trim(),
+                FileStream = file.Image.OpenReadStream(),
+                Description = file.Description
             });
         }
 
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        return Ok();
     }
 }
