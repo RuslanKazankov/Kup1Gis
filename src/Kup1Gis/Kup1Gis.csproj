@@ -7,15 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Kup1Gis.Domain\Kup1Gis.Domain.csproj" />
-      <ProjectReference Include="..\Kup1Gis.Infrastructure\Kup1Gis.Infrastructure.csproj" />
+        <ProjectReference Include="..\Kup1Gis.Domain\Kup1Gis.Domain.csproj"/>
+        <ProjectReference Include="..\Kup1Gis.Infrastructure\Kup1Gis.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>

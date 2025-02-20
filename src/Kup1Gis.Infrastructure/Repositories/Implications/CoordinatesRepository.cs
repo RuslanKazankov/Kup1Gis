@@ -1,8 +1,6 @@
-using Kup1Gis.Domain.Entity;
 using Kup1Gis.Domain.Entity.KupEntity;
 using Kup1Gis.Domain.RepoInterfaces;
 using Kup1Gis.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace Kup1Gis.Infrastructure.Repositories.Implications;
 
@@ -20,12 +18,10 @@ public sealed class CoordinatesRepository : Repository, ICoordinatesRepository
 
     public async Task<Coordinates> FindAsync(long id, CancellationToken token = default)
     {
-        var result = await Context.Coordinates.FindAsync([id], cancellationToken: token);
+        var result = await Context.Coordinates.FindAsync([id], token);
         if (result == null)
-        {
             //Todo: обработать ошибку
             throw new KeyNotFoundException();
-        }
 
         return result;
     }

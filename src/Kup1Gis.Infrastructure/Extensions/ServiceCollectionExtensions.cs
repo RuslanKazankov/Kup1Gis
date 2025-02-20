@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
                 .UseLazyLoadingProxies()
                 .UseSqlite(connectionString, b => b.MigrationsAssembly("Kup1Gis.Infrastructure"));
         });
-        
+
         return services;
     }
 
@@ -24,12 +24,12 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddScoped<IKupRepository, KupRepository>()
-                .AddScoped<ICoordinatesRepository, CoordinatesRepository>()
-                .AddScoped<IKupImageRepository, KupImageRepository>()
-                .AddScoped<IObservationRepository, ObservationRepository>()
-                    .AddScoped<IKupPropertyRepository, KupPropertyRepository>()
-                        .AddScoped<IPropertyRepository, PropertyRepository>();
-        
+            .AddScoped<ICoordinatesRepository, CoordinatesRepository>()
+            .AddScoped<IKupImageRepository, KupImageRepository>()
+            .AddScoped<IObservationRepository, ObservationRepository>()
+            .AddScoped<IKupPropertyRepository, KupPropertyRepository>()
+            .AddScoped<IPropertyRepository, PropertyRepository>();
+
         return services;
     }
 }

@@ -5,6 +5,4 @@ public class ImageFolder : Folder
     internal ImageFolder(Folder parent) : base("Images", parent)
     {
     }
-    
-    
 }

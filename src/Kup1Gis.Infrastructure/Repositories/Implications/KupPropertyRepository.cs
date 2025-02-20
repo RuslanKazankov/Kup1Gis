@@ -1,4 +1,3 @@
-using Kup1Gis.Domain.Entity;
 using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity;
 using Kup1Gis.Domain.RepoInterfaces;
 using Kup1Gis.Infrastructure.Persistence;
@@ -20,12 +19,10 @@ public sealed class KupPropertyRepository : Repository, IKupPropertyRepository
 
     public async Task<KupProperty> FindAsync(long id, CancellationToken token = default)
     {
-        var result = await Context.KupProperties.FindAsync([id], cancellationToken: token);
+        var result = await Context.KupProperties.FindAsync([id], token);
         if (result == null)
-        {
             //Todo: обработать ошибку
             throw new KeyNotFoundException();
-        }
 
         return result;
     }

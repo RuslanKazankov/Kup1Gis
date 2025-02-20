@@ -19,12 +19,10 @@ public sealed class KupRepository : Repository, IKupRepository
 
     public async Task<Kup> FindAsync(long id, CancellationToken token = default)
     {
-        var result = await Context.Kups.FindAsync([id], cancellationToken: token);
+        var result = await Context.Kups.FindAsync([id], token);
         if (result == null)
-        {
             //Todo: обработать ошибку
             throw new KeyNotFoundException();
-        }
 
         return result;
     }
@@ -46,13 +44,11 @@ public sealed class KupRepository : Repository, IKupRepository
     {
         var result = await Context.Kups
             .Where(k => k.Name == name)
-            .FirstOrDefaultAsync(cancellationToken: token);
-        
+            .FirstOrDefaultAsync(token);
+
         if (result == null)
-        {
             //Todo: обработать ошибку
             throw new KeyNotFoundException();
-        }
 
         return result;
     }
@@ -61,13 +57,11 @@ public sealed class KupRepository : Repository, IKupRepository
     {
         var result = await Context.Kups
             .Where(k => k.Id == id)
-            .FirstOrDefaultAsync(cancellationToken: token);
-        
+            .FirstOrDefaultAsync(token);
+
         if (result == null)
-        {
             //Todo: обработать ошибку
             throw new KeyNotFoundException();
-        }
 
         return result;
     }
@@ -76,20 +70,20 @@ public sealed class KupRepository : Repository, IKupRepository
     {
         return await Context.Kups
             .Where(k => k.Name == name)
-            .AnyAsync(cancellationToken: token);
+            .AnyAsync(token);
     }
 
     public async Task<bool> ContainsIdAsync(long id, CancellationToken token = default)
     {
         return await Context.Kups
             .Where(k => k.Id == id)
-            .AnyAsync(cancellationToken: token);
+            .AnyAsync(token);
     }
 
     public async Task<long[]> GetAllIdsAsync(CancellationToken token = default)
     {
         return await Context.Kups
             .Select(k => k.Id)
-            .ToArrayAsync(token); 
+            .ToArrayAsync(token);
     }
 }

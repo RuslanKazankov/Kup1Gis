@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Kup1Gis.Domain.Models;
 using Kup1Gis.Domain.Services;
 using Kup1Gis.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +7,12 @@ namespace Kup1Gis.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly IKupService _kupService;
     private readonly ILogger<HomeController> _logger;
     private readonly IPropertyService _propertyService;
-    private readonly IKupService _kupService;
 
     public HomeController(
-        ILogger<HomeController> logger, 
+        ILogger<HomeController> logger,
         IPropertyService propertyService,
         IKupService kupService)
     {
@@ -24,12 +23,12 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        IndexViewModel model = new IndexViewModel()
+        var model = new IndexViewModel
         {
             Properties = await _propertyService.GetAllProperties(),
             AllKups = await _kupService.GetAllKups()
         };
-        
+
         return View(model);
     }
 

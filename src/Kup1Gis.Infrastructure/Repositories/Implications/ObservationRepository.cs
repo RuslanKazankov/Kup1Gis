@@ -1,4 +1,3 @@
-using Kup1Gis.Domain.Entity;
 using Kup1Gis.Domain.Entity.KupEntity;
 using Kup1Gis.Domain.RepoInterfaces;
 using Kup1Gis.Infrastructure.Persistence;
@@ -11,9 +10,9 @@ public sealed class ObservationRepository : Repository, IObservationRepository
     {
     }
 
-    public Task AddAsync(Observation entity, CancellationToken token = default)
+    public async Task AddAsync(Observation entity, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        await Context.Observations.AddAsync(entity, token);
     }
 
     public Task<Observation> FindAsync(long id, CancellationToken token = default)

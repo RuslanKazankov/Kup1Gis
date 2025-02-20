@@ -1,4 +1,3 @@
-using Kup1Gis.Domain.Entity;
 using Kup1Gis.Domain.Models.Kup;
 using Kup1Gis.Domain.RepoInterfaces;
 
@@ -12,7 +11,7 @@ public class PropertyService : IPropertyService
     {
         _propertyRepository = propertyRepository;
     }
-    
+
     public async Task<IReadOnlyList<PropertyModel>> GetAllProperties(CancellationToken token = default)
     {
         return (await _propertyRepository.GetAllAsync(token))

@@ -7,6 +7,7 @@ public class Kup
 {
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public long Id { get; set; }
+
     public string Name { get; set; } = null!;
     public string GeographicalReference { get; set; } = string.Empty;
     public long CoordinatesId { get; set; }

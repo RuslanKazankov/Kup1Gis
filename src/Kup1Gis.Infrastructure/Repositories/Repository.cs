@@ -2,7 +2,7 @@ using Kup1Gis.Infrastructure.Persistence;
 
 namespace Kup1Gis.Infrastructure.Repositories;
 
-public abstract class Repository: IDisposable
+public abstract class Repository : IDisposable
 {
     protected readonly AppDbContext Context;
 

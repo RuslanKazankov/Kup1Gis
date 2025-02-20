@@ -5,12 +5,12 @@ namespace Kup1Gis.Domain.DirectorySystem;
 
 public class RootSystem : IImageFolderSource
 {
-    public FilesFolder Files { get; }
-
     public RootSystem()
     {
         Files = new FilesFolder();
     }
+
+    public FilesFolder Files { get; }
 
     public ImageFolder GetImageFolder()
     {

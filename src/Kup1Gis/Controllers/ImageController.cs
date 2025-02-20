@@ -13,19 +13,17 @@ public class ImageController : Controller
     {
         _imagesService = imagesService;
     }
-    
+
     [HttpPost]
     public IActionResult AddImage(AddImageListRequest request)
     {
         foreach (var file in request.Images)
-        {
-            _imagesService.AddImageToKup(request.KupId, new AddImageModel()
+            _imagesService.AddImageToKup(request.KupId, new AddImageModel
             {
                 FileName = string.IsNullOrEmpty(file.Title?.Trim()) ? file.Image.FileName : file.Title.Trim(),
                 FileStream = file.Image.OpenReadStream(),
                 Description = file.Description
             });
-        }
 
         return Ok();
     }

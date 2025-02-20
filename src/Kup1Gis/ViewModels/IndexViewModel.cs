@@ -5,5 +5,5 @@ namespace Kup1Gis.ViewModels;
 public record IndexViewModel
 {
     public IReadOnlyList<PropertyModel> Properties { get; init; } = [];
-    public IReadOnlyList<KupHeaderModel> AllKups { get; init; } = [];
+    public IReadOnlyList<KupHeadModel> AllKups { get; init; } = [];
 }

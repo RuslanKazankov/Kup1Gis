@@ -8,61 +8,100 @@ namespace Kup1Gis.Domain.Services.Implications;
 
 public sealed class KupService : IKupService
 {
+    private readonly IImagesService _imagesService;
     private readonly IKupRepository _kupRepository;
+    private readonly IObservationRepository _observationRepository;
     private readonly IPropertyRepository _propertyRepository;
-    
-    public KupService(IKupRepository kupRepository, IPropertyRepository propertyRepository)
+
+    public KupService(
+        IKupRepository kupRepository,
+        IPropertyRepository propertyRepository,
+        IObservationRepository observationRepository,
+        IImagesService imagesService)
     {
         _kupRepository = kupRepository;
         _propertyRepository = propertyRepository;
-    }
-    
-    public async Task<long> AddKup(ObservationModel model, CancellationToken token = default)
-    {
-        if (model.Id == null)
-        {
-            if (!(await _kupRepository.ContainsNameAsync(model.Name, token)))
-            {
-                throw new KeyNotFoundException("Имя не найдено. Укажите Id для новой точки или уточните имя.");
-            }
-            return await AddObservation(model, token);
-        }
-        else
-        {
-            if ((await _kupRepository.ContainsNameAsync(model.Name, token)))
-            {
-                var kup = await _kupRepository.FindByNameAsync(model.Name, token);
-                
-                if (kup.Id != model.Id)
-                    throw new KeyNotFoundException($"Имя уже используется у точки № {kup.Id}. Укажите этот Id или уберите его для нового наблюдения, или измените имя для новой точки.");
-                
-                return await AddObservation(model, token);
-            }
-
-            if ((await _kupRepository.ContainsIdAsync(model.Id.Value, token)))
-            {
-                return await AddObservationById(model, token);
-            }
-            await AddNewKup(model, token);
-            return model.Id.Value;
-        }
+        _observationRepository = observationRepository;
+        _imagesService = imagesService;
     }
 
-    private async Task<long> AddObservationById(ObservationModel model, CancellationToken token = default)
+    public async Task<long> AddKup(KupHeadModel model, CancellationToken token = default)
     {
-        if (model.Id == null)
+        var kup = new Kup
         {
-            throw new ArgumentNullException(nameof(model.Id));
-        }
-        Kup targetKup = await _kupRepository.FindByIdAsync(model.Id.Value, token);
-        targetKup.Observations.Add(await CreateObservation(model.Properties, token));
-        await _kupRepository.UpdateAsync(targetKup, token);
-        return targetKup.Id;
+            Id = model.Id,
+            Name = model.Name,
+            GeographicalReference = model.GeographicalReference ?? string.Empty,
+            Coordinates = new Coordinates
+            {
+                Latitude = model.Coordinates.Latitude,
+                Longitude = model.Coordinates.Longitude,
+                AbsMarkOfSea = model.Coordinates.AbsMarkOfSea,
+                Eksp = model.Coordinates.Eksp ?? string.Empty
+            }
+        };
+        await _kupRepository.AddAsync(kup, token);
+
+        return kup.Id;
     }
 
-    public async Task<IReadOnlyList<ObservationModel>> GetObservations(long id, CancellationToken token = default)
+    public async Task<FullKupModel> GetFullKup(long id, CancellationToken token = default)
     {
-        Kup kup = await _kupRepository.FindAsync(id, token);
+        var kup = await _kupRepository.FindByIdAsync(id, token);
+        List<ObservationModel> observationModels = [];
+        foreach (var observation in kup.Observations)
+            observationModels.Add(new ObservationModel
+            {
+                Name = kup.Name,
+                Properties = observation.KupProperties
+                    .Select(kp => new PropertyModel
+                    {
+                        Name = kp.Property.Name,
+                        Value = kp.Value
+                    }).ToList()
+            });
+
+        var kupResult = new FullKupModel
+        {
+            Id = kup.Id,
+            Name = kup.Name,
+            GeographicalReference = kup.GeographicalReference,
+            Coordinates = new CoordinatesModel
+            {
+                Latitude = kup.Coordinates.Latitude,
+                Longitude = kup.Coordinates.Longitude,
+                AbsMarkOfSea = kup.Coordinates.AbsMarkOfSea,
+                Eksp = kup.Coordinates.Eksp
+            },
+            Observations = observationModels,
+            KupImages = await _imagesService.GetImages(kup.Id, token)
+        };
+        return kupResult;
+    }
+
+    public async Task<long> AddObservation(ObservationModel model, CancellationToken token = default)
+    {
+        var kup = await _kupRepository.FindByNameAsync(model.Name, token);
+
+        List<KupProperty> kupProperties = [];
+        foreach (var property in model.Properties)
+            kupProperties.Add(new KupProperty
+            {
+                Property = await _propertyRepository.FindByNameAsync(property.Name, token),
+                Value = property.Value
+            });
+        await _observationRepository.AddAsync(new Observation
+        {
+            KupId = kup.Id,
+            KupProperties = kupProperties
+        }, token);
+
+        return kup.Id;
+    }
+
+    public async Task<IReadOnlyList<ObservationModel>> GetObservations(long kupId, CancellationToken token = default)
+    {
+        var kup = await _kupRepository.FindAsync(kupId, token);
 
         List<ObservationModel> result = [];
 
@@ -70,37 +109,27 @@ public sealed class KupService : IKupService
         {
             ObservationModel observationModel = new()
             {
-                Id = kup.Id,
                 Name = kup.Name,
-                GeographicalReference = kup.GeographicalReference,
-                Coordinates = new CoordinatesModel
-                {
-                    Latitude = kup.Coordinates.Latitude,
-                    Longitude = kup.Coordinates.Longitude,
-                    AbsMarkOfSea = kup.Coordinates.AbsMarkOfSea,
-                    Eksp = kup.Coordinates.Eksp
-                },
                 Properties = observation.KupProperties
                     .Select(kp => new PropertyModel
                     {
-                        Name = kp.Property.Name, 
+                        Name = kp.Property.Name,
                         Value = kp.Value
                     }).ToList()
             };
-            
+
             result.Add(observationModel);
         }
-        
+
         return result;
     }
 
-    public async Task<IReadOnlyList<KupHeaderModel>> GetAllKups(CancellationToken token = default)
+    public async Task<IReadOnlyList<KupHeadModel>> GetAllKups(CancellationToken token = default)
     {
         var allKups = await _kupRepository.GetAllAsync(token);
-        List<KupHeaderModel> result = [];
+        List<KupHeadModel> result = [];
         foreach (var kup in allKups)
-        {
-            result.Add(new KupHeaderModel
+            result.Add(new KupHeadModel
             {
                 Id = kup.Id,
                 Name = kup.Name,
@@ -113,52 +142,6 @@ public sealed class KupService : IKupService
                     Eksp = kup.Coordinates.Eksp
                 }
             });
-        }
         return result;
-    }
-
-    private async Task<long> AddObservation(ObservationModel model, CancellationToken token = default)
-    {
-        Kup targetKup = await _kupRepository.FindByNameAsync(model.Name, token);
-        targetKup.Observations.Add(await CreateObservation(model.Properties, token));
-        await _kupRepository.UpdateAsync(targetKup, token);
-        return targetKup.Id;
-    }
-
-    private async Task AddNewKup(ObservationModel model, CancellationToken token = default)
-    {
-        Kup newKup = new Kup
-        {
-            Id = model.Id!.Value,
-            Name = model.Name,
-            GeographicalReference = model.GeographicalReference,
-            Coordinates = new Coordinates
-            {
-                Latitude = model.Coordinates.Latitude,
-                Longitude = model.Coordinates.Longitude,
-                AbsMarkOfSea = model.Coordinates.AbsMarkOfSea,
-                Eksp = model.Coordinates.Eksp
-            },
-            Observations = [await CreateObservation(model.Properties, token)]
-        };
-        await _kupRepository.AddAsync(newKup, token);
-    }
-
-    private async Task<Observation> CreateObservation(IReadOnlyList<PropertyModel> properties, CancellationToken token = default)
-    {
-        List<KupProperty> kupProperties = [];
-        foreach (var property in properties)
-        {
-            kupProperties.Add(new KupProperty
-            {
-                Property = await _propertyRepository.FindByNameAsync(property.Name, token),
-                Value = property.Value
-            });
-        }
-        
-        return new Observation
-        {
-            KupProperties = kupProperties
-        };;
     }
 }

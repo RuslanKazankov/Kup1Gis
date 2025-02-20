@@ -4,5 +4,4 @@ namespace Kup1Gis.Domain.RepoInterfaces;
 
 public interface IKupImageRepository : IRepository<KupImage>
 {
-    
 }
