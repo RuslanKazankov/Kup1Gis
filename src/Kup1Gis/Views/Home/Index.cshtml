@@ -135,6 +135,12 @@
                                     aria-expanded="False" aria-controls="editPointForm"></button>
                         </div>
                     </div>
+                    <div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="editModeSwitch">
+                            <label class="form-check-label" for="editModeSwitch">Режим редактирования</label>
+                        </div>
+                    </div>
                     <div class="text-start">
                         <div class="row g-2">
                             <div class="col-4">
@@ -180,8 +186,16 @@
                                 <label for="editKupEksp" class="form-label">Эксп.,°</label>
                             </div>
                         </div>
-                        <div id="observationsContainer">
+                        <div>
+                            <input class="btn btn-success mt-2" type="hidden" id="editKupHeadButton" value="Обновить описание"/>
+                        </div>
+                        <div id="observationsContainer" class="text-center">
                             
+                        </div>
+                        <div>
+                            <input class="btn btn-success mt-2" type="hidden" id="editObservationsButton" value="Обновить наблюдения"/>
+                            <input class="btn btn-primary mt-2" type="hidden" id="addObservationsButton" value="Добавить наблюдение"/>
+                            <input class="btn btn-warning mt-2" type="hidden" id="addImage" value="Добавить изображение"/>
                         </div>
                     </div>
                 </form>
@@ -255,9 +269,121 @@
 
 
 <script>
+    document.getElementById("editObservationsButton").addEventListener("click", async function (){
+        let observations = [];
+        let kupName = document.getElementById("editKupName").value;
+        
+        let editProperties = document.getElementsByClassName("editProperty");
+        for (let i = 0; i < editProperties.length; i++){
+            let index = editProperties[i].id.split("id")[0];
+            if (observations.length.toString() === index){
+                observations.push({ name: kupName, properties: [] });
+            }
+            observations[index].properties.push({ name: editProperties[i].name, value: editProperties[i].value });
+        }
+        
+        console.log("UpdateObservationList Request:");
+        console.log(observations)
+        
+        let response = await fetch("Kup/UpdateObservationsList/", {
+            method: "POST",
+            body: observations
+        });
+        
+        if (response.ok){
+            sendNotify("Данные обновлены");
+        }else{
+            console.log(response);
+            let responseText = await response.text();
+            console.log(responseText);
+            sendNotify(response.status + " " + response.statusText, true);
+        }
+    });
+    
+    document.getElementById("addObservationsButton").addEventListener("click", function (){
+        let baseProperties = @Html.Raw(Json.Serialize(Model.Properties));
+        
+        let observationContainer = document.getElementById("observationsContainer");
+        let newObservation = document.createElement("div");
+        let i = observationContainer.children.length;
+        newObservation.id = `editObservation${i}`;
+        newObservation.innerHTML = `
+                <button type="button" class="btn btn-outline-primary mt-3 w-100"
+                        data-bs-toggle="collapse" data-bs-target=".observable-collapse${i}"
+                        aria-expanded="false" aria-controls="collapseInputObservableSymbol${i} collapseObservable${i}">
+                    Наблюдение ${i + 1}
+                    <span class="collapse observable-collapse${i}" id="collapseInputObservableSymbol${i}">▼</span>
+                </button>
+                <div class="collapse observable-collapse${i}" id="collapseObservable${i}">
+                </div>`;
+        observationContainer.appendChild(newObservation);
+        let propertyContainer = document.getElementById(`collapseObservable${i}`);
+        for (let j = 0; j < baseProperties.length; j++){
+            let nameProperty = baseProperties[j].name;
+            let newProperty = document.createElement("div");
+            newProperty.innerHTML = `
+                <div class="mt-3">
+                    <label for="${i}id${nameProperty}">${nameProperty}</label>
+                    <textarea name="${nameProperty}" id="${i}id${nameProperty}" class="form-control editProperty"
+                                 ></textarea>
+                </div>`;
+            propertyContainer.appendChild(newProperty);
+        }
+        
+    });
+    
+    document.getElementById("editKupHeadButton").addEventListener("click", function () {
+        
+    });
+    
+    document.getElementById("editModeSwitch").addEventListener("change", function() {
+        if(this.checked){
+            editModeOn();
+        }else{
+            editModeOff();
+        }
+    });
+    
+    function editModeOn(){
+        document.getElementById("editKupName").removeAttribute("readonly");
+        document.getElementById("editKupGeographicalReference").removeAttribute("readonly");
+        document.getElementById("editKupLatitude").removeAttribute("readonly");
+        document.getElementById("editKupLongitude").removeAttribute("readonly");
+        document.getElementById("editKupAbsMarkOfSea").removeAttribute("readonly");
+        document.getElementById("editKupEksp").removeAttribute("readonly");
+        
+        document.getElementById("editKupHeadButton").type = "button";
+        document.getElementById("editObservationsButton").type = "button";
+        document.getElementById("addObservationsButton").type = "button";
+        document.getElementById("addImage").type = "button";
+        
+        let editProperties = document.getElementsByClassName("editProperty");
+        for(let i = 0; i < editProperties.length; i++){
+            editProperties[i].removeAttribute("readonly");
+        }
+    }
+    
+    function editModeOff(){
+        document.getElementById("editKupName").setAttribute("readonly", true);
+        document.getElementById("editKupGeographicalReference").setAttribute("readonly", true);
+        document.getElementById("editKupLatitude").setAttribute("readonly", true);
+        document.getElementById("editKupLongitude").setAttribute("readonly", true);
+        document.getElementById("editKupAbsMarkOfSea").setAttribute("readonly", true);
+        document.getElementById("editKupEksp").setAttribute("readonly", true);
+
+        document.getElementById("editKupHeadButton").type = "hidden";
+        document.getElementById("editObservationsButton").type = "hidden";
+        document.getElementById("addObservationsButton").type = "hidden";
+        document.getElementById("addImage").type = "hidden";
+
+        let editProperties = document.getElementsByClassName("editProperty");
+        for(let i = 0; i < editProperties.length; i++){
+            editProperties[i].setAttribute("readonly", true);
+        }
+    }
+    
     async function getKupFromTable(id) {
         let kupResponse = await fetch(`/Kup/GetKup/${id}`);
-        console.log(kupResponse);
         if (!kupResponse.ok) return;
         let kup = await kupResponse.json();
         console.log(kup);
@@ -275,7 +401,7 @@
             let newObservation = document.createElement("div");
             newObservation.id = `editObservation${i}`;
             newObservation.innerHTML = `
-                    <button type="button" class="btn btn-outline-primary mt-3"
+                    <button type="button" class="btn btn-outline-primary mt-3 w-100"
                             data-bs-toggle="collapse" data-bs-target=".observable-collapse${i}"
                             aria-expanded="false" aria-controls="collapseInputObservableSymbol${i} collapseObservable${i}">
                         Наблюдение ${i + 1}
@@ -289,8 +415,8 @@
                 let newProperty = document.createElement("div");
                 newProperty.innerHTML = `
                     <div class="mt-3">
-                        <label for="${i}id${kup.observations[i].properties[j].Name}">${kup.observations[i].properties[j].name}</label>
-                        <textarea readonly name="${kup.observations[i].properties[j].name}" id="${i}id${kup.observations[i].properties[j].name}" class="form-control"
+                        <label for="${i}id${kup.observations[i].properties[j].name}">${kup.observations[i].properties[j].name}</label>
+                        <textarea readonly name="${kup.observations[i].properties[j].name}" id="${i}id${kup.observations[i].properties[j].name}" class="form-control editProperty"
                                      >${kup?.observations[i]?.properties[j]?.value ?? ""}</textarea>
                     </div>`;
                 propertyContainer.appendChild(newProperty);
@@ -339,7 +465,7 @@
                 marker.setPopup(popup);
             }
             catch (e){
-                console.error(e);
+                console.warn(e);
             }
         });
     };

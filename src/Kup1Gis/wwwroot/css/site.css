@@ -1,6 +1,6 @@
 html {
     font-size: 14px;
-    --header-height: 6vh;
+    --header-height: 0vh; //6vh;
 }
 
 @media (min-width: 768px) {

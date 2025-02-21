@@ -30,6 +30,14 @@ public class KupController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> UpdateObservationsList(IReadOnlyList<ObservationModel> model)
+    {
+        
+        
+        return StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
+    [HttpPost]
     public async Task<IActionResult> AddKup(KupHeadModel model)
     {
         _logger.LogInformation("Adding kup: {model}", Request);
