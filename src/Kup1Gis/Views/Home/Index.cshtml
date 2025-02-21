@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Главная";
     var prefixProperty = "property_";
-    var prefixIdProperty = "propertyId_";
 }
 
 <!--Types of notifications-->
@@ -68,9 +67,6 @@
                                 </div>
                             </div>
                         </div>
-                        @* <div id="idHelp" class="form-text mt-1"> *@
-                        @*     Если не указать id (№), то добавится наблюдение к существующей точке по названию (№ т.н.). *@
-                        @* </div> *@
                         <div class="mt-3 form-floating">
                             <textarea name="GeographicalReference" id="kupGeographicalReference" class="form-control"
                                       placeholder="Географическая привязка"></textarea>
@@ -123,23 +119,6 @@
                         @*         <textarea placeholder="Описание" class="form-control"></textarea> *@
                         @*     </div> *@
                         @* </div> *@
-
-                        @* <button type="button" class="btn btn-outline-primary mt-3" *@
-                        @*         data-bs-toggle="collapse" data-bs-target=".observable-collapse" *@
-                        @*         aria-expanded="false" aria-controls="collapseInputObservableSymbol1 collapseObservable"> *@
-                        @*     Заполнить наблюдение *@
-                        @*     <span class="collapse observable-collapse" id="collapseInputObservableSymbol1">▼</span> *@
-                        @* </button> *@
-                        @* <div class="collapse observable-collapse" id="collapseObservable"> *@
-                        @*     @foreach (var property in Model.Properties) *@
-                        @*     { *@
-                        @*         <div class="mt-3 form-floating"> *@
-                        @*             <textarea name="@($"{prefixProperty}{property.Name}")" id="@($"{prefixIdProperty}{property.Name}")" class="form-control" *@
-                        @*                   placeholder="@property.Name"></textarea> *@
-                        @*             <label for="@($"{prefixIdProperty}{property.Name}")">@property.Name</label> *@
-                        @*         </div> *@
-                        @*     } *@
-                        @* </div> *@
                     </div>
                     <div class="mt-3">
                         <button id="createPointBtn" class="btn btn-primary" type="button">Создать</button>
@@ -159,7 +138,7 @@
                     <div class="text-start">
                         <div class="row g-2">
                             <div class="col-4">
-                                <label for="kupId" class="form-label">Id</label>
+                                <label for="editKupId" class="form-label">Id</label>
                                 <input readonly name="Id" id="editKupId" class="form-control" type="number"
                                        placeholder="№" required aria-describedby="idHelp"/>
                                 <div class="invalid-feedback">
@@ -167,7 +146,7 @@
                                 </div>
                             </div>
                             <div class="col-8">
-                                <label for="kupName" class="form-label">Название</label>
+                                <label for="editKupName" class="form-label">Название</label>
                                 <input readonly name="Name" id="editKupName" class="form-control" type="text"
                                        placeholder="№ т.н."/>
                             </div>
@@ -175,16 +154,16 @@
                         <div class="mt-3 form-floating">
                             <textarea readonly name="GeographicalReference" id="editKupGeographicalReference"
                                       class="form-control" placeholder="Географическая привязка"></textarea>
-                            <label for="kupGeographicalReference">Географическая привязка</label>
+                            <label for="editKupGeographicalReference">Географическая привязка</label>
                         </div>
                         <div class="row g-2 mt-2">
                             <div class="col-6 mt-0">
-                                <label for="kupLatitude" class="form-label">Широта</label>
+                                <label for="editKupLatitude" class="form-label">Широта</label>
                                 <input readonly name="Coordinates.Latitude" id="editKupLatitude" class="form-control"
                                        type="number" step="0.000001" placeholder="Широта"/>
                             </div>
                             <div class="col-6 mt-0">
-                                <label for="kupLongitude" class="form-label">Долгота</label>
+                                <label for="editKupLongitude" class="form-label">Долгота</label>
                                 <input readonly name="Coordinates.Longitude" id="editKupLongitude" class="form-control"
                                        type="number" step="0.000001" placeholder="Долгота"/>
                             </div>
@@ -193,13 +172,16 @@
                             <div class="col-6 mt-0 form-floating">
                                 <input readonly name="Coordinates.AbsMarkOfSea" id="editKupAbsMarkOfSea"
                                        class="form-control" type="number" step="0.0001" placeholder="Абс. отм., м"/>
-                                <label for="kupAbsMarkOfSea" class="form-label">Абс. отм., м</label>
+                                <label for="editKupAbsMarkOfSea" class="form-label">Абс. отм., м</label>
                             </div>
                             <div class="col-6 mt-0 form-floating">
                                 <input readonly name="Coordinates.Eksp" id="editKupEksp" class="form-control"
                                        type="text" placeholder="Эксп.,°"/>
-                                <label for="kupEksp" class="form-label">Эксп.,°</label>
+                                <label for="editKupEksp" class="form-label">Эксп.,°</label>
                             </div>
+                        </div>
+                        <div id="observationsContainer">
+                            
                         </div>
                     </div>
                 </form>
@@ -265,11 +247,6 @@
                             aria-expanded="False" aria-controls="createPointForm">
                         Создать
                     </button>
-                    @* <button type="button" class="btn btn-outline-info mt-2" *@
-                    @*         data-bs-toggle="collapse" data-bs-target="#editPointForm"  *@
-                    @*         aria-expanded="False" aria-controls="editPointForm"> *@
-                    @*     Изменить *@
-                    @* </button> *@
                 </div>
             </div>
         </div>
@@ -291,6 +268,34 @@
         document.getElementById("editKupLongitude").value = kup.coordinates.longitude;
         document.getElementById("editKupAbsMarkOfSea").value = kup.coordinates.absMarkOfSea;
         document.getElementById("editKupEksp").value = kup.coordinates.eksp;
+
+        let observationContainer = document.getElementById("observationsContainer");
+        observationContainer.innerHTML = "";
+        for (let i = 0; i < kup.observations.length; i++){
+            let newObservation = document.createElement("div");
+            newObservation.id = `editObservation${i}`;
+            newObservation.innerHTML = `
+                    <button type="button" class="btn btn-outline-primary mt-3"
+                            data-bs-toggle="collapse" data-bs-target=".observable-collapse${i}"
+                            aria-expanded="false" aria-controls="collapseInputObservableSymbol${i} collapseObservable${i}">
+                        Наблюдение ${i + 1}
+                        <span class="collapse observable-collapse${i}" id="collapseInputObservableSymbol${i}">▼</span>
+                    </button>
+                    <div class="collapse observable-collapse${i}" id="collapseObservable${i}">
+                    </div>`;
+            observationContainer.appendChild(newObservation);
+            let propertyContainer = document.getElementById(`collapseObservable${i}`);
+            for (let j = 0; j < kup.observations[i].properties.length; j++){
+                let newProperty = document.createElement("div");
+                newProperty.innerHTML = `
+                    <div class="mt-3">
+                        <label for="${i}id${kup.observations[i].properties[j].Name}">${kup.observations[i].properties[j].name}</label>
+                        <textarea readonly name="${kup.observations[i].properties[j].name}" id="${i}id${kup.observations[i].properties[j].name}" class="form-control"
+                                     >${kup?.observations[i]?.properties[j]?.value ?? ""}</textarea>
+                    </div>`;
+                propertyContainer.appendChild(newProperty);
+            }
+        }
 
         let form = document.getElementById("editPointForm");
         if (!form.classList.contains("show")) {
@@ -317,12 +322,13 @@
         map.addControl(new maplibregl.NavigationControl());
 
         kupPoints.forEach(kup => {
-            let marker = new maplibregl.Marker()
-                .setLngLat([kup.coordinates.longitude, kup.coordinates.latitude])
-                .addTo(map);
+            try {
+                let marker = new maplibregl.Marker()
+                    .setLngLat([kup.coordinates.longitude, kup.coordinates.latitude])
+                    .addTo(map);
 
-            let popup = new maplibregl.Popup({offset: 10})
-                .setHTML(`
+                let popup = new maplibregl.Popup({offset: 10})
+                    .setHTML(`
 <div class="popup-content">
     <b>${kup.name}</b><br>
     ${kup.geographicalReference}<br>
@@ -330,7 +336,11 @@
   </div>
 `);
 
-            marker.setPopup(popup);
+                marker.setPopup(popup);
+            }
+            catch (e){
+                console.error(e);
+            }
         });
     };
 
