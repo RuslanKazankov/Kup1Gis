@@ -37,4 +37,9 @@ public sealed class KupPropertyRepository : Repository, IKupPropertyRepository
     {
         return await Context.KupProperties.AsNoTracking().ToListAsync(token);
     }
+
+    public Task DeleteAsync(KupProperty entity, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
 }

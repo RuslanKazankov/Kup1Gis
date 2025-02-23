@@ -46,6 +46,7 @@ public class Startup
         app.UseRequestLocalization(localizationOptions);
 
         app.UseStaticFiles();
+        app.UseHttpLogging();
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {

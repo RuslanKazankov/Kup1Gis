@@ -38,6 +38,11 @@ public sealed class PropertyRepository : Repository, IPropertyRepository
         return await Context.Properties.AsNoTracking().ToListAsync(token);
     }
 
+    public Task DeleteAsync(Property entity, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Property> FindByNameAsync(string name, CancellationToken token = default)
     {
         var result = await Context.Properties

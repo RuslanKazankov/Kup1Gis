@@ -190,12 +190,11 @@
                             <input class="btn btn-success mt-2" type="hidden" id="editKupHeadButton" value="Обновить описание"/>
                         </div>
                         <div id="observationsContainer" class="text-center">
-                            
                         </div>
                         <div>
                             <input class="btn btn-success mt-2" type="hidden" id="editObservationsButton" value="Обновить наблюдения"/>
                             <input class="btn btn-primary mt-2" type="hidden" id="addObservationsButton" value="Добавить наблюдение"/>
-                            <input class="btn btn-warning mt-2" type="hidden" id="addImage" value="Добавить изображение"/>
+                            @* <input class="btn btn-warning mt-2" type="hidden" id="addImage" value="Добавить изображение"/> *@
                         </div>
                     </div>
                 </form>
@@ -287,7 +286,8 @@
         
         let response = await fetch("Kup/UpdateObservationsList/", {
             method: "POST",
-            body: observations
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(observations)
         });
         
         if (response.ok){

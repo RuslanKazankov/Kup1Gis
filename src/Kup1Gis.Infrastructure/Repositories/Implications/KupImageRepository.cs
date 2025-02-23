@@ -29,4 +29,9 @@ public class KupImageRepository : Repository, IKupImageRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task DeleteAsync(KupImage entity, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
 }

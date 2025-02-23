@@ -40,6 +40,11 @@ public sealed class KupRepository : Repository, IKupRepository
             .ToListAsync(token);
     }
 
+    public Task DeleteAsync(Kup entity, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Kup> FindByNameAsync(string name, CancellationToken token = default)
     {
         var result = await Context.Kups

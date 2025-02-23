@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Kup1Gis.Domain.Models;
 using Kup1Gis.Domain.Models.Kup;
 using Kup1Gis.Domain.Services;
@@ -30,11 +31,11 @@ public class KupController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateObservationsList(IReadOnlyList<ObservationModel> model)
+    public async Task<IActionResult> UpdateObservationsList([FromBody] IReadOnlyList<ObservationModel> models)
     {
-        
-        
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        _logger.LogInformation(JsonSerializer.Serialize(models));
+        await _kupService.UpdateObservationList(models);
+        return Ok();
     }
 
     [HttpPost]

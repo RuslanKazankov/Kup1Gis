@@ -1,6 +1,7 @@
 using Kup1Gis.Domain.Entity;
 using Kup1Gis.Domain.Entity.KupEntity;
 using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity;
+using Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity;
 using Kup1Gis.Domain.Models.Kup;
 using Kup1Gis.Domain.RepoInterfaces;
 
@@ -97,6 +98,32 @@ public sealed class KupService : IKupService
         }, token);
 
         return kup.Id;
+    }
+
+    public async Task UpdateObservationList(IReadOnlyList<ObservationModel> models, CancellationToken token = default)
+    {
+        if (models.Count == 0)
+        {
+            return;
+        }
+        Kup kup = await _kupRepository.FindByNameAsync(models[0].Name, token);
+        IReadOnlyList<Property> baseProperties = await _propertyRepository.GetAllAsync(token);
+        List<Observation> observations = [];
+        foreach (var model in models)
+        {
+            observations.Add(new Observation
+            {
+                KupProperties = model.Properties.Select(p => new KupProperty
+                {
+                    Id = 0,
+                    PropertyId = 0,
+                    Property = baseProperties.First(bp => bp.Name == p.Name),
+                    Value = p.Value
+                }).ToList()
+            });
+        }
+        
+        await _kupRepository.UpdateAsync(kup, token);
     }
 
     public async Task<IReadOnlyList<ObservationModel>> GetObservations(long kupId, CancellationToken token = default)

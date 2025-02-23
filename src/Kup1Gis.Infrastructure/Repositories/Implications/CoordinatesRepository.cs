@@ -36,4 +36,9 @@ public sealed class CoordinatesRepository : Repository, ICoordinatesRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task DeleteAsync(Coordinates entity, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
 }
