@@ -7,5 +7,5 @@ public class KupProperty
     public long Id { get; set; }
     public long PropertyId { get; set; }
     public virtual Property Property { get; set; } = null!;
-    public string Value { get; set; } = string.Empty;
+    public virtual List<PropertyValue> Values { get; set; } = [];
 }

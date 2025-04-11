@@ -10,44 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kup1Gis.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250202124325_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250411075534_NewInit")]
+    partial class NewInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
-
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.Coordinates", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double?>("AbsMarkOfSea")
-                        .HasColumnType("REAL");
-
-                    b.Property<string>("Eksp")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("KupId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("KupId")
-                        .IsUnique();
-
-                    b.ToTable("Coordinates");
-                });
 
             modelBuilder.Entity("Kup1Gis.Domain.Entity.Kup", b =>
                 {
@@ -69,56 +39,82 @@ namespace Kup1Gis.Infrastructure.Migrations
 
                     b.HasAlternateKey("Name");
 
+                    b.HasIndex("CoordinatesId")
+                        .IsUnique();
+
                     b.ToTable("Kups");
                 });
 
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupProperty", b =>
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.Coordinates", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("KupId")
-                        .HasColumnType("INTEGER");
+                    b.Property<double?>("AbsMarkOfSea")
+                        .HasColumnType("REAL");
 
-                    b.Property<long?>("ObservationId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("PropertyId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Value")
+                    b.Property<string>("Eksp")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coordinates");
+                });
+
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.KupImage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("KupId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("KupId");
 
-                    b.HasIndex("ObservationId");
+                    b.ToTable("KupImages");
+                });
+
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupProperty", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("KupId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("PropertyId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KupId");
 
                     b.HasIndex("PropertyId");
 
                     b.ToTable("KupProperties");
                 });
 
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.Observation", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("KupId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("KupId");
-
-                    b.ToTable("Observations");
-                });
-
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.Property", b =>
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity.Property", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -178,22 +174,22 @@ namespace Kup1Gis.Infrastructure.Migrations
                         new
                         {
                             Id = 9L,
-                            Name = "Sк, м"
+                            Name = "Основные системы Sк, м"
                         },
                         new
                         {
                             Id = 10L,
-                            Name = "Sср, м"
+                            Name = "Основные системы Sср, м"
                         },
                         new
                         {
                             Id = 11L,
-                            Name = "Sм, м"
+                            Name = "Основные системы Sм, м"
                         },
                         new
                         {
                             Id = 12L,
-                            Name = "V, м3"
+                            Name = "Основные системы V, м3"
                         },
                         new
                         {
@@ -238,7 +234,7 @@ namespace Kup1Gis.Infrastructure.Migrations
                         new
                         {
                             Id = 21L,
-                            Name = "Тип подвижки"
+                            Name = "Штрихи Тип подвижки"
                         },
                         new
                         {
@@ -253,12 +249,12 @@ namespace Kup1Gis.Infrastructure.Migrations
                         new
                         {
                             Id = 24L,
-                            Name = "Амплитуда смещения, м"
+                            Name = "Сколы со смещениями Амплитуда смещения, м"
                         },
                         new
                         {
                             Id = 25L,
-                            Name = "Тип подвижки"
+                            Name = "Сколы со смещениями Тип подвижки"
                         },
                         new
                         {
@@ -337,65 +333,93 @@ namespace Kup1Gis.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.Coordinates", b =>
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity.PropertyValue", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("KupPropertyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KupPropertyId");
+
+                    b.ToTable("PropertyValues");
+                });
+
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.Kup", b =>
+                {
+                    b.HasOne("Kup1Gis.Domain.Entity.KupEntity.Coordinates", "Coordinates")
+                        .WithOne("Kup")
+                        .HasForeignKey("Kup1Gis.Domain.Entity.Kup", "CoordinatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Coordinates");
+                });
+
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.KupImage", b =>
                 {
                     b.HasOne("Kup1Gis.Domain.Entity.Kup", "Kup")
-                        .WithOne("Coordinates")
-                        .HasForeignKey("Kup1Gis.Domain.Entity.Coordinates", "KupId")
+                        .WithMany("KupImages")
+                        .HasForeignKey("KupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Kup");
                 });
 
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupProperty", b =>
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupProperty", b =>
                 {
-                    b.HasOne("Kup1Gis.Domain.Entity.Kup", "Kup")
-                        .WithMany()
-                        .HasForeignKey("KupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Kup1Gis.Domain.Entity.Kup", null)
+                        .WithMany("Properties")
+                        .HasForeignKey("KupId");
 
-                    b.HasOne("Kup1Gis.Domain.Entity.Observation", null)
-                        .WithMany("KupProperties")
-                        .HasForeignKey("ObservationId");
-
-                    b.HasOne("Kup1Gis.Domain.Entity.Property", "Property")
+                    b.HasOne("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity.Property", "Property")
                         .WithMany("KupProperties")
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Kup");
-
                     b.Navigation("Property");
                 });
 
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.Observation", b =>
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity.PropertyValue", b =>
                 {
-                    b.HasOne("Kup1Gis.Domain.Entity.Kup", "Kup")
-                        .WithMany("Observations")
-                        .HasForeignKey("KupId")
+                    b.HasOne("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupProperty", "KupProperty")
+                        .WithMany("Values")
+                        .HasForeignKey("KupPropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Kup");
+                    b.Navigation("KupProperty");
                 });
 
             modelBuilder.Entity("Kup1Gis.Domain.Entity.Kup", b =>
                 {
-                    b.Navigation("Coordinates")
-                        .IsRequired();
+                    b.Navigation("KupImages");
 
-                    b.Navigation("Observations");
+                    b.Navigation("Properties");
                 });
 
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.Observation", b =>
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.Coordinates", b =>
                 {
-                    b.Navigation("KupProperties");
+                    b.Navigation("Kup")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("Kup1Gis.Domain.Entity.Property", b =>
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupProperty", b =>
+                {
+                    b.Navigation("Values");
+                });
+
+            modelBuilder.Entity("Kup1Gis.Domain.Entity.KupEntity.ObservationEntity.KupPropertyEntity.Property", b =>
                 {
                     b.Navigation("KupProperties");
                 });

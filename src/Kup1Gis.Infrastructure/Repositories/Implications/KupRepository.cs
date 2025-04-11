@@ -48,6 +48,8 @@ public sealed class KupRepository : Repository, IKupRepository
     public async Task<Kup> FindByNameAsync(string name, CancellationToken token = default)
     {
         var result = await Context.Kups
+            .Include(k => k.Properties)
+            .ThenInclude(kp => kp.Property)
             .Where(k => k.Name == name)
             .FirstOrDefaultAsync(token);
 

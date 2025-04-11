@@ -7,24 +7,25 @@
 namespace Kup1Gis.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class NewInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Kups",
+                name: "Coordinates",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    GeographicalReference = table.Column<string>(type: "TEXT", nullable: false),
-                    CoordinatesId = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Latitude = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Longitude = table.Column<decimal>(type: "TEXT", nullable: false),
+                    AbsMarkOfSea = table.Column<double>(type: "REAL", nullable: true),
+                    Eksp = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Kups", x => x.Id);
-                    table.UniqueConstraint("AK_Kups_Name", x => x.Name);
+                    table.PrimaryKey("PK_Coordinates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -42,41 +43,41 @@ namespace Kup1Gis.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Coordinates",
+                name: "Kups",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Latitude = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Longitude = table.Column<decimal>(type: "TEXT", nullable: false),
-                    AbsMarkOfSea = table.Column<double>(type: "REAL", nullable: true),
-                    Eksp = table.Column<string>(type: "TEXT", nullable: false),
-                    KupId = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    GeographicalReference = table.Column<string>(type: "TEXT", nullable: false),
+                    CoordinatesId = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Coordinates", x => x.Id);
+                    table.PrimaryKey("PK_Kups", x => x.Id);
+                    table.UniqueConstraint("AK_Kups_Name", x => x.Name);
                     table.ForeignKey(
-                        name: "FK_Coordinates_Kups_KupId",
-                        column: x => x.KupId,
-                        principalTable: "Kups",
+                        name: "FK_Kups_Coordinates_CoordinatesId",
+                        column: x => x.CoordinatesId,
+                        principalTable: "Coordinates",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Observations",
+                name: "KupImages",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    FileName = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
                     KupId = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Observations", x => x.Id);
+                    table.PrimaryKey("PK_KupImages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Observations_Kups_KupId",
+                        name: "FK_KupImages_Kups_KupId",
                         column: x => x.KupId,
                         principalTable: "Kups",
                         principalColumn: "Id",
@@ -89,10 +90,8 @@ namespace Kup1Gis.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    KupId = table.Column<long>(type: "INTEGER", nullable: false),
                     PropertyId = table.Column<long>(type: "INTEGER", nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: false),
-                    ObservationId = table.Column<long>(type: "INTEGER", nullable: true)
+                    KupId = table.Column<long>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,17 +100,31 @@ namespace Kup1Gis.Infrastructure.Migrations
                         name: "FK_KupProperties_Kups_KupId",
                         column: x => x.KupId,
                         principalTable: "Kups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_KupProperties_Observations_ObservationId",
-                        column: x => x.ObservationId,
-                        principalTable: "Observations",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_KupProperties_Properties_PropertyId",
                         column: x => x.PropertyId,
                         principalTable: "Properties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropertyValues",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    KupPropertyId = table.Column<long>(type: "INTEGER", nullable: false),
+                    Value = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropertyValues", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropertyValues_KupProperties_KupPropertyId",
+                        column: x => x.KupPropertyId,
+                        principalTable: "KupProperties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -129,10 +142,10 @@ namespace Kup1Gis.Infrastructure.Migrations
                     { 6L, "Залегание пород уг.пад.,°" },
                     { 7L, "Основные системы аз.пад.,°" },
                     { 8L, "Основные системы уг.пад.,°" },
-                    { 9L, "Sк, м" },
-                    { 10L, "Sср, м" },
-                    { 11L, "Sм, м" },
-                    { 12L, "V, м3" },
+                    { 9L, "Основные системы Sк, м" },
+                    { 10L, "Основные системы Sср, м" },
+                    { 11L, "Основные системы Sм, м" },
+                    { 12L, "Основные системы V, м3" },
                     { 13L, "Vg, м3" },
                     { 14L, "Основные максимумы с диаграмм трещиноватости (3 или более в случае равной интенсивности I)  аз.пад.,°" },
                     { 15L, "Основные максимумы с диаграмм трещиноватости (3 или более в случае равной интенсивности I)  уг.пад.,°" },
@@ -141,11 +154,11 @@ namespace Kup1Gis.Infrastructure.Migrations
                     { 18L, "Сколы со штрихами уг.пад.,°" },
                     { 19L, "Штрихи аз.скл.,°" },
                     { 20L, "Штрихи уг.пад.,°" },
-                    { 21L, "Тип подвижки" },
+                    { 21L, "Штрихи Тип подвижки" },
                     { 22L, "Сколы со смещениями аз.пад.,°" },
                     { 23L, "Сколы со смещениями уг.пад.,°" },
-                    { 24L, "Амплитуда смещения, м" },
-                    { 25L, "Тип подвижки" },
+                    { 24L, "Сколы со смещениями Амплитуда смещения, м" },
+                    { 25L, "Сколы со смещениями Тип подвижки" },
                     { 26L, "Шарнир складки/длиная ось будины аз.пад.,°" },
                     { 27L, "Шарнир складки/длиная ось будины уг.скл.,°" },
                     { 28L, "Зоны разрывных нарушений тип" },
@@ -164,10 +177,9 @@ namespace Kup1Gis.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Coordinates_KupId",
-                table: "Coordinates",
-                column: "KupId",
-                unique: true);
+                name: "IX_KupImages_KupId",
+                table: "KupImages",
+                column: "KupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KupProperties_KupId",
@@ -175,38 +187,42 @@ namespace Kup1Gis.Infrastructure.Migrations
                 column: "KupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_KupProperties_ObservationId",
-                table: "KupProperties",
-                column: "ObservationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_KupProperties_PropertyId",
                 table: "KupProperties",
                 column: "PropertyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Observations_KupId",
-                table: "Observations",
-                column: "KupId");
+                name: "IX_Kups_CoordinatesId",
+                table: "Kups",
+                column: "CoordinatesId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropertyValues_KupPropertyId",
+                table: "PropertyValues",
+                column: "KupPropertyId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Coordinates");
+                name: "KupImages");
+
+            migrationBuilder.DropTable(
+                name: "PropertyValues");
 
             migrationBuilder.DropTable(
                 name: "KupProperties");
 
             migrationBuilder.DropTable(
-                name: "Observations");
+                name: "Kups");
 
             migrationBuilder.DropTable(
                 name: "Properties");
 
             migrationBuilder.DropTable(
-                name: "Kups");
+                name: "Coordinates");
         }
     }
 }

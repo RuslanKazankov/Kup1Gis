@@ -15,6 +15,7 @@ public class ExcelService : IExcelService
     public const string XssFormat = ".xlsx";
     public const string HssFormat = ".xls";
     private readonly IKupService _kupService;
+    private readonly IPropertyService _propertyService;
 
     private readonly ILogger<ExcelService> _logger;
     private readonly IPropertyRepository _propertyRepository;
@@ -22,11 +23,13 @@ public class ExcelService : IExcelService
     public ExcelService(
         ILogger<ExcelService> logger,
         IPropertyRepository propertyRepository,
-        IKupService kupService)
+        IKupService kupService,
+        IPropertyService propertyService)
     {
         _logger = logger;
         _propertyRepository = propertyRepository;
         _kupService = kupService;
+        _propertyService = propertyService;
     }
 
     public async Task<IReadOnlyList<string>> ReadKupModels(Stream fileStream, ExcelType type,
@@ -48,9 +51,13 @@ public class ExcelService : IExcelService
             var id = currentRow.GetCell(0).GetLong();
             try
             {
-                if (id is not null) await _kupService.AddKup(CreateKupHeadModel(id.Value, currentRow), token);
+                if (id is not null)
+                {
+                    await _kupService.AddKup(CreateKupHeadModel(id.Value, currentRow), token);
+                }
 
-                await _kupService.AddObservation(CreateObservation(currentRow, baseProperties), token);
+                await _propertyService.AddProperties(currentRow.GetCell(1).GetString(),
+                    CreatePropertyList(currentRow, baseProperties), token);
             }
             catch (Exception e)
             {
@@ -66,6 +73,32 @@ public class ExcelService : IExcelService
         }
 
         return errors;
+    }
+
+    private IReadOnlyList<PropertyModel> CreatePropertyList(IRow row, IReadOnlyList<Property> baseProperties)
+    {
+        List<PropertyModel> properties = [];
+        for (var i = 0; i < baseProperties.Count; i++)
+        {
+            string value = row.GetCell(i + 7).GetString();
+            if (string.IsNullOrEmpty(value) &&
+                (i < 7 || i > 11 || row.GetCell(13).GetString() == string.Empty) &&
+                (i != 18 || row.GetCell(25).GetString() == string.Empty) &&
+                (i != 17 || row.GetCell(25).GetString() == string.Empty) &&
+                (i < 28 || i > 30 || row.GetCell(34).GetString() == string.Empty) && // Зоны разрывных
+                (i < 32 || i > 33 || row.GetCell(38).GetString() == string.Empty)
+                )
+            {
+                continue;
+            }
+            
+            properties.Add(new PropertyModel
+            {
+                Name = baseProperties[i].Name,
+                Value = [value]
+            });
+        }
+        return properties;
     }
 
     private KupHeadModel CreateKupHeadModel(long id, IRow row)
@@ -86,23 +119,6 @@ public class ExcelService : IExcelService
                 AbsMarkOfSea = row.GetCell(5).GetDouble(),
                 Eksp = row.GetCell(6).GetString()
             }
-        };
-    }
-
-    private ObservationModel CreateObservation(IRow row, IReadOnlyList<Property> baseProperties)
-    {
-        List<PropertyModel> properties = [];
-        for (var i = 0; i < baseProperties.Count; i++)
-            properties.Add(new PropertyModel
-            {
-                Name = baseProperties[i].Name,
-                Value = row.GetCell(i + 7).GetString()
-            });
-
-        return new ObservationModel
-        {
-            Name = row.GetCell(1).GetString(),
-            Properties = properties
         };
     }
 }

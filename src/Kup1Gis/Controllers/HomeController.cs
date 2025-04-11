@@ -26,7 +26,8 @@ public class HomeController : Controller
         var model = new IndexViewModel
         {
             Properties = await _propertyService.GetAllProperties(),
-            AllKups = await _kupService.GetAllKups()
+            AllKups = await _kupService.GetAllKups(),
+            AllFullKups = await _kupService.GetAllFullKups()
         };
 
         return View(model);

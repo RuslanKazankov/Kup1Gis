@@ -18,10 +18,10 @@ public sealed class AppDbContext : DbContext
         "Залегание пород уг.пад.,\u00b0",
         "Основные системы аз.пад.,\u00b0",
         "Основные системы уг.пад.,\u00b0",
-        "Sк, м",
-        "Sср, м",
-        "Sм, м",
-        "V, м3",
+        "Основные системы Sк, м",
+        "Основные системы Sср, м",
+        "Основные системы Sм, м",
+        "Основные системы V, м3",
         "Vg, м3",
         "Основные максимумы с диаграмм трещиноватости (3 или более в случае равной интенсивности I)  аз.пад.,\u00b0",
         "Основные максимумы с диаграмм трещиноватости (3 или более в случае равной интенсивности I)  уг.пад.,\u00b0",
@@ -30,11 +30,11 @@ public sealed class AppDbContext : DbContext
         "Сколы со штрихами уг.пад.,\u00b0",
         "Штрихи аз.скл.,\u00b0",
         "Штрихи уг.пад.,\u00b0",
-        "Тип подвижки",
+        "Штрихи Тип подвижки",
         "Сколы со смещениями аз.пад.,\u00b0",
         "Сколы со смещениями уг.пад.,\u00b0",
-        "Амплитуда смещения, м",
-        "Тип подвижки",
+        "Сколы со смещениями Амплитуда смещения, м",
+        "Сколы со смещениями Тип подвижки",
         "Шарнир складки/длиная ось будины аз.пад.,\u00b0",
         "Шарнир складки/длиная ось будины уг.скл.,\u00b0",
         "Зоны разрывных нарушений тип",
@@ -61,10 +61,10 @@ public sealed class AppDbContext : DbContext
     }
 
     public DbSet<Kup> Kups { get; set; }
-    public DbSet<Observation> Observations { get; set; }
     public DbSet<Coordinates> Coordinates { get; set; }
-    public DbSet<Property> Properties { get; set; }
     public DbSet<KupProperty> KupProperties { get; set; }
+    public DbSet<Property> Properties { get; set; }
+    public DbSet<PropertyValue> PropertyValues { get; set; }
     public DbSet<KupImage> KupImages { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -24,21 +24,6 @@ public class KupController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddObservation(ObservationModel model)
-    {
-        var id = await _kupService.AddObservation(model);
-        return Ok(id);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateObservationsList([FromBody] IReadOnlyList<ObservationModel> models)
-    {
-        _logger.LogInformation(JsonSerializer.Serialize(models));
-        await _kupService.UpdateObservationList(models);
-        return Ok();
-    }
-
-    [HttpPost]
     public async Task<IActionResult> AddKup(KupHeadModel model)
     {
         _logger.LogInformation("Adding kup: {model}", Request);

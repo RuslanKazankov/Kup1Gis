@@ -26,7 +26,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<IKupRepository, KupRepository>()
             .AddScoped<ICoordinatesRepository, CoordinatesRepository>()
             .AddScoped<IKupImageRepository, KupImageRepository>()
-            .AddScoped<IObservationRepository, ObservationRepository>()
             .AddScoped<IKupPropertyRepository, KupPropertyRepository>()
             .AddScoped<IPropertyRepository, PropertyRepository>();
 

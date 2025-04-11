@@ -6,4 +6,5 @@ public record IndexViewModel
 {
     public IReadOnlyList<PropertyModel> Properties { get; init; } = [];
     public IReadOnlyList<KupHeadModel> AllKups { get; init; } = [];
+    public IReadOnlyList<FullKupModel> AllFullKups { get; init; } = [];
 }
