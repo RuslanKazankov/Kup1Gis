@@ -261,10 +261,20 @@
                     <button type="button" class="btn btn-outline-primary mt-2"
                             data-bs-toggle="collapse" data-bs-target="#createPointForm"
                             aria-expanded="False" aria-controls="createPointForm">
-                        Создать (Не полностью реализовано)
+                        Создать
                     </button>
-                    <button type="button" class="btn btn-outline-danger mt-2" id="showRazloms">
-                        Показать/скрыть разломы
+                </div>
+                <div class="card mt-2 p-2 text-center">
+                    <h5>Геологические знаки</h5>
+                    <div class="text-start" id="markerContainer">
+                    </div>
+                </div>
+                <div class="card mt-2 p-2 text-center">
+                    <button type="button" class="btn btn-primary" id="createIsoliniesVgm3">
+                        Построить изолинии по Vg, м3
+                    </button>
+                    <button type="button" class="btn btn-primary mt-2" id="createIsoliniesNm2">
+                        Построить изолинии по N, м2
                     </button>
                 </div>
             </div>
@@ -275,11 +285,112 @@
 
 <script>
     let map;
+    const defaultBigDiv = {
+        width: '40px',
+        height: '5px',
+        color: 'red',
+        border: true,
+    }
+    const defaultSmallDiv = {
+        width: '5px',
+        height: '15px',
+        color: 'red',
+        border: true
+    }
+    function withColor(div, color){
+        let copy = JSON.parse(JSON.stringify(div));
+        copy.color = color;
+        return copy;
+    }
+    const defaultMarkerSettings = [ 
+        {
+            name: 'Залегание пород',
+            propertyId: 4,
+            div: withColor(defaultBigDiv, 'red'),
+            smallDiv: withColor(defaultSmallDiv, 'red')
+        },
+        {
+            name: 'Основные системы',
+            propertyId: 6,
+            div: withColor(defaultBigDiv, 'yellow'),
+            smallDiv: withColor(defaultSmallDiv, 'yellow')
+        },
+        {
+            name: 'Сколы со штрихами',
+            propertyId: 16,
+            div: withColor(defaultBigDiv, 'green'),
+            smallDiv: withColor(defaultSmallDiv, 'green')
+        },
+        {
+            name: 'Штрихи',
+            propertyId: 18,
+            div: withColor(defaultBigDiv, 'olive'),
+            smallDiv: withColor(defaultSmallDiv, 'olive')
+        },
+        {
+            name: 'Сколы со смещениями',
+            propertyId: 21,
+            div: withColor(defaultBigDiv, 'orange'),
+            smallDiv: withColor(defaultSmallDiv, 'orange')
+        },
+        {
+            name: 'Шарнир складки/длиная ось будины',
+            propertyId: 25,
+            div: withColor(defaultBigDiv, 'DarkSlateGray'),
+            smallDiv: withColor(defaultSmallDiv, 'DarkSlateGray')
+        },
+        {
+            name: 'Зоны разрывных разрушений',
+            propertyId: 28,
+            div: withColor(defaultBigDiv, 'blue'),
+            smallDiv: withColor(defaultSmallDiv, 'blue')
+        },
+        {
+            name: 'Крупные сколы',
+            propertyId: 31,
+            div: withColor(defaultBigDiv, 'purple'),
+            smallDiv: withColor(defaultSmallDiv, 'purple')
+        },
+    ];
+    let fullKups = @Html.Raw(Json.Serialize(Model.AllFullKups));
+    let currentMarkerSettings = null;
+
+    let myMarkers = new Map();
+    function loadMarkers(){
+        currentMarkerSettings = JSON.parse(localStorage.getItem('markerSettings'));
+        if (currentMarkerSettings == null){
+            currentMarkerSettings = defaultMarkerSettings;
+            localStorage.setItem('markerSettings',
+                JSON.stringify(currentMarkerSettings));
+        }
+        
+        let markerContainer = document.getElementById('markerContainer');
+        
+        currentMarkerSettings.forEach(mConf => {
+            let newMarkerDiv = document.createElement('div');
+            let switchId = `switch${mConf.propertyId}`;
+            newMarkerDiv.style.display = 'flex';
+            newMarkerDiv.className = 'mt-2';
+            newMarkerDiv.innerHTML = `
+                <div style="background-color: ${mConf.div.color}; width: 20px; height: 20px; margin: 2px 5px; flex-shrink: 0; border: 1px solid black;"></div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input marker-switch" type="checkbox" role="switch" id="${switchId}" data-propertyId="${mConf.propertyId}">
+                    <label class="form-check-label" for="${switchId}">${mConf.name}</label>
+                </div>
+            `;
+            markerContainer.appendChild(newMarkerDiv);
+
+            document.getElementById(switchId).addEventListener('change', switchMarkers);
+            myMarkers.set(mConf.propertyId, []);
+        })
+    }
+    
     window.onload = function () {
-        let kupPoints = @Html.Raw(Json.Serialize(Model.AllKups));
-        console.log(kupPoints[0]);
-        const latitude = kupPoints[0].coordinates.latitude ?? 0;
-        const longitude = kupPoints[0].coordinates.longitude ?? 0;
+        loadMarkers();
+        
+        console.log(fullKups[0]);
+        const latitude = fullKups[0].coordinates.latitude ?? 0;
+        const longitude = fullKups[0].coordinates.longitude ?? 0;
         console.log(latitude);
         console.log(longitude);
         map = new maplibregl.Map({
@@ -291,7 +402,7 @@
 
         map.addControl(new maplibregl.NavigationControl());
 
-        kupPoints.forEach(kup => {
+        fullKups.forEach(kup => {
             try {
                 let marker = new maplibregl.Marker()
                     .setLngLat([kup.coordinates.longitude, kup.coordinates.latitude])
@@ -299,12 +410,12 @@
 
                 let popup = new maplibregl.Popup({offset: 10})
                     .setHTML(`
-<div class="popup-content">
-    <b>${kup.name}</b><br>
-    ${kup.geographicalReference}<br>
-    Координаты: ${kup.coordinates.latitude}, ${kup.coordinates.longitude}
-  </div>
-`);
+                        <div class="popup-content">
+                            <b>${kup.name}</b><br>
+                            ${kup.geographicalReference}<br>
+                            Координаты: ${kup.coordinates.latitude}, ${kup.coordinates.longitude}
+                          </div>
+                    `);
 
                 marker.setPopup(popup);
             }
@@ -313,64 +424,75 @@
             }
         });
     };
-    let loadRazloms = false;
-    let currentDisplay = false;
-    let myMarkers = [];
-    document.getElementById("showRazloms").addEventListener("click", async function (){
-        if (loadRazloms){
-            displayMarkers();
+    
+    function switchMarkers(event){
+        let checkbox = event.target;
+        let propertyId = parseInt(checkbox.dataset.propertyid);
+        if (myMarkers.get(propertyId).length > 0){
+            displayMarkers(propertyId, checkbox.checked);
             return;
         }
-        let kupPoints = @Html.Raw(Json.Serialize(Model.AllFullKups));        
-        kupPoints.forEach(point => {
+        createMarkers(currentMarkerSettings.find(cms => cms.propertyId === propertyId));
+    }
+    
+    function createMarkers(markerConf){
+        fullKups.forEach(point => {
             const lat = point.coordinates.latitude;
             const lon = point.coordinates.longitude;
 
-            for (let i = 0; i < point.kupProperties[6].value.length; i++){
-                const angle = parseFloat(point.kupProperties[6].value[i]);
+            for (let i = 0; i < point.kupProperties[markerConf.propertyId].value.length; i++){
+                const angle = parseFloat(point.kupProperties[markerConf.propertyId].value[i]);
                 console.log(angle);
-                drawRotatedPixelRect(lat, lon, angle);
+                drawRotatedPixelRect(lat, lon, angle, markerConf);
             }
         });
-        loadRazloms = true;
-        currentDisplay = true;
-    });
-
-    function displayMarkers() {
-        myMarkers.forEach(marker => {
-            const element = marker.getElement();
-            if (element) {
-                element.style.display = currentDisplay ? 'none' : 'block';
-            }
-        });
-        currentDisplay = !currentDisplay;
+    }
+    
+    function removeMyMarkers(propertyId){
+        myMarkers.get(propertyId).forEach(marker => marker.remove());
+        myMarkers.set(propertyId, []);
     }
 
-    function drawRotatedPixelRect(lat, lon, angleDeg) {
+    function displayMarkers(propertyId, checked) {
+        myMarkers.get(propertyId).forEach(marker => {
+            const element = marker.getElement();
+            if (element) {
+                if (checked){
+                    element.style.display = 'block';
+                }
+                else{
+                    element.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    function drawRotatedPixelRect(lat, lon, angleDeg, mConf) {
         const div = document.createElement('div');
-        div.style.width = '40px';
-        div.style.height = '5px';
-        div.style.backgroundColor = 'red';
+        div.style.width = mConf.div.width;
+        div.style.height = mConf.div.height;
+        div.style.backgroundColor = mConf.div.color;
+        if (mConf.div.border)
+            div.style.border ='1px solid black';
         div.style.position = 'absolute';
-        div.style.border = '1px solid black';
         div.style.transformOrigin = 'center center';
 
         const smallDiv = document.createElement('div');
-        smallDiv.style.width = '5px';
-        smallDiv.style.height = '15px';
-        smallDiv.style.backgroundColor = 'red';
+        smallDiv.style.width = mConf.smallDiv.width;
+        smallDiv.style.height = mConf.smallDiv.height;
+        smallDiv.style.backgroundColor = mConf.smallDiv.color;
         smallDiv.style.position = 'absolute';
-        smallDiv.style.border = '1px solid black';
+        if (mConf.smallDiv.border)
+            smallDiv.style.border = '1px solid black';
         smallDiv.style.transformOrigin = 'center center';
-        
         
         const markContainer = document.createElement('div');
         markContainer.appendChild(div);
         markContainer.appendChild(smallDiv);
 
         markContainer.style.transformOrigin = 'center bottom';
-        markContainer.style.width = '40px';
-        markContainer.style.height = '40px';
+        markContainer.style.width = mConf.div.width;
+        markContainer.style.height = mConf.div.width;
 
         smallDiv.style.left = `${(markContainer.style.width.slice(0, -2) - smallDiv.style.width.slice(0, -2)) / 2}px`;
         smallDiv.style.bottom = '0px';
@@ -383,8 +505,100 @@
             .setLngLat([lon, lat])
             .addTo(map);
         
-        myMarkers.push(marker);
+        myMarkers.get(mConf.propertyId).push(marker);
     }
+    
+    document.getElementById("createIsoliniesVgm3").addEventListener("click", async function(){
+        fetch('/Map/GetIsolinies')
+            .then(res => res.json())
+            .then(gridPointsGeoJson => {
+                const breaks = [5, 10, 15, 20, 25];
+
+                const contours = turf.isobands(gridPointsGeoJson, breaks, {
+                    zProperty: 'value',
+                });
+
+                map.addSource('isolines', {
+                    type: 'geojson',
+                    data: contours,
+                });
+
+                map.addLayer({
+                    id: 'isolines-fill',
+                    type: 'fill',
+                    source: 'isolines',
+                    paint: {
+                        'fill-color': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'value'],
+                            5, '#edf8fb',
+                            10, '#b3cde3',
+                            15, '#8c96c6',
+                            20, '#8856a7',
+                            25, '#810f7c'
+                        ],
+                        'fill-opacity': 0.5
+                    }
+                });
+
+                map.addLayer({
+                    id: 'isolines-outline',
+                    type: 'line',
+                    source: 'isolines',
+                    paint: {
+                        'line-color': '#333',
+                        'line-width': 1
+                    }
+                });
+            });
+    });
+    
+    document.getElementById("createIsoliniesNm2").addEventListener("click", async function(){
+        fetch('/Map/GetNIsolinies')
+            .then(res => res.json())
+            .then(gridPointsGeoJson => {
+                const breaks = [5, 10, 15, 20, 25];
+
+                const contours = turf.isobands(gridPointsGeoJson, breaks, {
+                    zProperty: 'value',
+                });
+
+                map.addSource('nisolines', {
+                    type: 'geojson',
+                    data: contours,
+                });
+
+                map.addLayer({
+                    id: 'nisolines-fill',
+                    type: 'fill',
+                    source: 'nisolines',
+                    paint: {
+                        'fill-color': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'value'],
+                            5, '#edf8fb',
+                            10, '#b3cde3',
+                            15, '#8c96c6',
+                            20, '#8856a7',
+                            25, '#810f7c'
+                        ],
+                        'fill-opacity': 0.5
+                    }
+                });
+
+                map.addLayer({
+                    id: 'nisolines-outline',
+                    type: 'line',
+                    source: 'nisolines',
+                    paint: {
+                        'line-color': '#333',
+                        'line-width': 1
+                    }
+                });
+            });
+    });
 
     document.getElementById("editObservationsButton").addEventListener("click", async function (){
         let observations = [];
